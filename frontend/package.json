@@ -1,0 +1,8 @@
+{
+  "name": "mibanquito-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -e 'console.log(\"Frontend simulado corriendo...\"); while(true);'"
+  },
+  "dependencies": {}
+}
