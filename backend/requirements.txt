@@ -1,11 +1,11 @@
-# Framework principal
 Django>=5.0
-
-# Driver para conectar Python con PostgreSQL
 psycopg[binary]
-
-# Para crear una API (indispensable para conectar con el frontend)
 djangorestframework
-
-# Para leer tu archivo .env fácilmente
 django-environ
+django-cors-headers
+requests
+pytest
+pytest-django
+pytest-mock
+flake8
+black
