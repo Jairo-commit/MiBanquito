@@ -104,25 +104,9 @@ User(AbstractUser):
   city            — CharField(max_length=100)
   phone           — CharField(max_length=20)
   email           — EmailField(unique=True)   # override AbstractUser's non-unique email
-  occupation      — CharField, choices: INDEPENDENT / EMPLOYEE
 ```
 
 ---
-
-### `backend/users/validators.py`
-
-```
-class BankPasswordValidator:
-  min_length = 12
-  validate(password, user=None):
-    — min 12 chars
-    — at least 1 uppercase [A-Z]
-    — at least 1 lowercase [a-z]
-    — at least 1 digit \d
-    — at least 1 special character
-    — raise ValidationError listing ALL failures (not just first)
-  get_help_text(): human-readable requirements string
-```
 
 ---
 
@@ -130,13 +114,13 @@ class BankPasswordValidator:
 
 ```
 UserRegisterSerializer(ModelSerializer):
-  fields: document_type, document_number, full_name, city, phone, email, occupation, password (write_only), password_confirm (write_only)
+  fields: document_type, document_number, full_name, city, phone, email, password (write_only), password_confirm (write_only)
   validate_password: call django.contrib.auth.password_validation.validate_password()
   validate: check password == password_confirm
   create: pop password_confirm, call User.objects.create_user()
 
 UserProfileSerializer(ModelSerializer):
-  fields: id, document_type, document_number, full_name, city, phone, email, occupation
+  fields: id, document_type, document_number, full_name, city, phone, email
   read_only_fields: id, document_type, document_number, email
 ```
 
@@ -198,8 +182,6 @@ SavingsAccountViewSet(ModelViewSet):
   @action(detail=True, methods=['get'])
   def movements: paginated AccountMovement list for the account
 ```
-
-`SavingsAccountCreateSerializer` accepts `initial_deposit` (write-only, min 100_000), others read-only.
 
 ---
 
@@ -278,22 +260,6 @@ calculate_loan_quota(principal, monthly_rate, term_months) -> Decimal:
 ### `backend/landing/data.py`
 
 Static dict `LANDING_INFO` with mission, vision, products list, contact info.
-
----
-
-### `backend/core/urls.py` (replace)
-
-```python
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),
-    path('api/', include('accounts.urls')),
-    path('api/', include('transactions.urls')),
-    path('api/', include('products.urls')),
-    path('api/', include('simulators.urls')),
-    path('api/', include('landing.urls')),
-]
-```
 
 ---
 

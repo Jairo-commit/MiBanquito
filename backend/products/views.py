@@ -1,13 +1,10 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from products.models import CDT, LoanRequest
 from products.serializers import CDTSerializer, LoanRequestSerializer
 from simulators.services import fetch_current_rates
 
 
 class LoanRequestViewSet(viewsets.ModelViewSet):
-    http_method_names = ["get", "post", "head", "options"]
-    permission_classes = [IsAuthenticated]
     serializer_class = LoanRequestSerializer
 
     def get_queryset(self):
@@ -21,8 +18,6 @@ class LoanRequestViewSet(viewsets.ModelViewSet):
 
 
 class CDTViewSet(viewsets.ModelViewSet):
-    http_method_names = ["get", "post", "head", "options"]
-    permission_classes = [IsAuthenticated]
     serializer_class = CDTSerializer
 
     def get_queryset(self):

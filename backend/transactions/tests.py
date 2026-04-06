@@ -24,7 +24,6 @@ def user(db):
         full_name="Test User",
         city="Bogotá",
         phone="3001234567",
-        occupation="EMPLOYEE",
     )
 
 
@@ -39,7 +38,6 @@ def other_user(db):
         full_name="Other User",
         city="Cali",
         phone="3009876543",
-        occupation="INDEPENDENT",
     )
 
 

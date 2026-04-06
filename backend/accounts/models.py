@@ -34,17 +34,12 @@ class SavingsAccount(models.Model):
 
 
 class AccountMovement(models.Model):
-    MOVEMENT_DEPOSIT = "DEPOSIT"
-    MOVEMENT_WITHDRAWAL = "WITHDRAWAL"
-    MOVEMENT_TRANSFER_IN = "TRANSFER_IN"
-    MOVEMENT_TRANSFER_OUT = "TRANSFER_OUT"
 
-    MOVEMENT_TYPE_CHOICES = [
-        (MOVEMENT_DEPOSIT, "Deposit"),
-        (MOVEMENT_WITHDRAWAL, "Withdrawal"),
-        (MOVEMENT_TRANSFER_IN, "Transfer In"),
-        (MOVEMENT_TRANSFER_OUT, "Transfer Out"),
-    ]
+    class MovementType(models.TextChoices):
+        DEPOSIT = "DEPOSIT", "Deposit"
+        WITHDRAWAL = "WITHDRAWAL", "Withdrawal"
+        TRANSFER_IN = "TRANSFER_IN", "Transfer In"
+        TRANSFER_OUT = "TRANSFER_OUT", "Transfer Out"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     account = models.ForeignKey(
@@ -52,7 +47,10 @@ class AccountMovement(models.Model):
         on_delete=models.CASCADE,
         related_name="movements",
     )
-    movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPE_CHOICES)
+    movement_type = models.CharField(
+        max_length=20,
+        choices=MovementType.choices
+    )
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     description = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

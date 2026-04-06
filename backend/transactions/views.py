@@ -2,11 +2,9 @@ import logging
 import uuid
 
 from django.db import transaction as db_transaction
-from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from accounts.models import AccountMovement, SavingsAccount
 from transactions.models import Transaction
@@ -15,22 +13,10 @@ from transactions.serializers import TransactionSerializer, TransferSerializer
 logger = logging.getLogger(__name__)
 
 
-class TransactionViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    def list(self, request):
-        user_account_ids = SavingsAccount.objects.filter(user=request.user).values_list(
-            "id", flat=True
-        )
-        queryset = Transaction.objects.filter(
-            Q(source_account_id__in=user_account_ids)
-            | Q(destination_account_id__in=user_account_ids)
-        ).order_by("-created_at")
-        paginator = PageNumberPagination()
-        paginator.page_size = 20
-        page = paginator.paginate_queryset(queryset, request)
-        serializer = TransactionSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all().order_by("-created_at")
+    serializer_class = TransactionSerializer
+    pagination_class = PageNumberPagination
 
     @action(detail=False, methods=["post"])
     def transfer(self, request):

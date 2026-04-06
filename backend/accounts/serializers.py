@@ -3,11 +3,12 @@ from rest_framework import serializers
 from accounts.models import AccountMovement, SavingsAccount
 
 
-class SavingsAccountCreateSerializer(serializers.ModelSerializer):
+class SavingsAccountSerializer(serializers.ModelSerializer):
     initial_deposit = serializers.DecimalField(
         max_digits=15,
         decimal_places=2,
         write_only=True,
+        required=False
     )
 
     class Meta:
@@ -18,14 +19,14 @@ class SavingsAccountCreateSerializer(serializers.ModelSerializer):
             "balance",
             "is_active",
             "created_at",
-            "initial_deposit",
+            "initial_deposit"
         ]
         read_only_fields = [
             "id",
             "account_number",
             "balance",
             "is_active",
-            "created_at",
+            "created_at"
         ]
 
     def validate_initial_deposit(self, value):
@@ -35,22 +36,17 @@ class SavingsAccountCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def create(self, validated_data):
+        initial_deposit = validated_data.pop('initial_deposit', 0)
 
-class SavingsAccountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SavingsAccount
-        fields = ["id", "account_number", "balance", "is_active", "created_at"]
-        read_only_fields = [
-            "id",
-            "account_number",
-            "balance",
-            "is_active",
-            "created_at",
-        ]
+        validated_data['balance'] = initial_deposit
+
+        return super().create(validated_data)
 
 
 class AccountMovementSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountMovement
         fields = ["id", "movement_type", "amount", "description", "timestamp"]
-        read_only_fields = ["id", "movement_type", "amount", "description", "timestamp"]
+        read_only_fields = ["id", "movement_type",
+                            "amount", "description", "timestamp"]

@@ -15,7 +15,6 @@ class UserAdmin(BaseUserAdmin):
                     "full_name",
                     "city",
                     "phone",
-                    "occupation",
                 )
             },
         ),
