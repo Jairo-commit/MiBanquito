@@ -113,3 +113,6 @@ scripts/smartsheet-data/
 # django backup files
 django/backup/
 django/db_dumps/
+
+# Local development environment files
+frontend/node_modules/*

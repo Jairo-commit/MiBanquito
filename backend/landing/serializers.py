@@ -2,7 +2,7 @@ from rest_framework import serializers
 from landing.models import ContactMessage
 
 
-class ContactMessageSerializer(serializers.Serializer):
+class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
         fields = [

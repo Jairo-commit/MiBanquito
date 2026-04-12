@@ -27,6 +27,17 @@ cd MiBanquito
 
 Create a file named `.env` in the root directory.
 
+### 2.1 Install Frontend Dependencies Locally
+
+The frontend source is mounted into Docker, but your local editor and TypeScript server still need `frontend/node_modules` on the host. Run this once after cloning:
+
+```bash
+cd frontend
+npm install
+```
+
+Do not commit `node_modules` to GitHub; it should remain local and is usually ignored by `.gitignore`.
+
 ### 3. Build and Start All Services
 
 This command builds the images and starts the database, backend, and frontend containers in the background:

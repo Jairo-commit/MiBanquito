@@ -1,8 +1,26 @@
 {
   "name": "mibanquito-frontend",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "start": "node -e 'console.log(\"Frontend simulado corriendo...\"); while(true);'"
+    "dev": "vite --host 0.0.0.0 --port ${FRONTEND_PORT_INTERNAL:-3000}",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@mui/material": "^7.1.1",
+    "@tanstack/react-query": "^5.76.1",
+    "axios": "^1.9.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.5.0",
+    "vite": "^8.0.8"
+  }
 }
