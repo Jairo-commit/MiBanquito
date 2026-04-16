@@ -13,6 +13,9 @@ class SavingsAccountSerializer(serializers.ModelSerializer):
             "is_active",
             "created_at",
         ]
+        extra_kwargs = {
+            "account_number": {"read_only": True},
+        }
 
 
 class AccountMovementSerializer(serializers.ModelSerializer):
