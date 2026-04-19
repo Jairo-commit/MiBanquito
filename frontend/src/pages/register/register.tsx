@@ -1,9 +1,85 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
+import { registerSchema, RegisterFormValues } from "./registerSchema";
+import { FormTextField } from "~/components/FormTextField/formTextField";
+import { FormSelectField } from "~/components/FormSelectField/formSelectField";
+import { PrimaryFormButton } from "~/components/PrimaryFormButton/primaryFormButton";
+import { DOCUMENT_TYPE_OPTIONS } from "~/constants/documentTypeOptions";
+import * as styles from "./register.sx";
 
-export function Register(){
+const defaultValues: RegisterFormValues = {
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    document_type: "CC",
+    document_number: "",
+    full_name: "",
+    city: "",
+    phone: "",
+};
+
+export function Register() {
+    const form = useForm({
+        defaultValues,
+        onSubmit: async () => {
+            console.log("Form submitted with values:", form.state.values);
+            // TODO: call register API
+        },
+        validators: {
+            onBlur: registerSchema,
+            onSubmit: registerSchema,
+        },
+    });
+
     return (
-        <Box>
-            Please register
+        <Box sx={styles.pageWrapperSx}>
+            <Box sx={styles.formCardSx} component="form" onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit();
+            }}>
+                <Typography variant="h5" sx={styles.titleSx}>
+                    Create your account
+                </Typography>
+
+                <form.Field name="username">
+                    {(field) => <FormTextField field={field} label="Username" />}
+                </form.Field>
+
+                <form.Field name="email">
+                    {(field) => <FormTextField field={field} label="Email" type="email" />}
+                </form.Field>
+
+                <form.Field name="password">
+                    {(field) => <FormTextField field={field} label="Password" type="password" />}
+                </form.Field>
+
+                <form.Field name="confirmPassword">
+                    {(field) => <FormTextField field={field} label="Confirm Password" type="password" />}
+                </form.Field>
+
+                <form.Field name="document_type">
+                    {(field) => <FormSelectField field={field} label="Document Type" options={DOCUMENT_TYPE_OPTIONS} />}
+                </form.Field>
+
+                <form.Field name="document_number">
+                    {(field) => <FormTextField field={field} label="Document Number" />}
+                </form.Field>
+
+                <form.Field name="full_name">
+                    {(field) => <FormTextField field={field} label="Full Name (optional)" />}
+                </form.Field>
+
+                <form.Field name="city">
+                    {(field) => <FormTextField field={field} label="City (optional)" />}
+                </form.Field>
+
+                <form.Field name="phone">
+                    {(field) => <FormTextField field={field} label="Phone (optional)" />}
+                </form.Field>
+
+                <PrimaryFormButton>Register</PrimaryFormButton>
+            </Box>
         </Box>
     );
 }
