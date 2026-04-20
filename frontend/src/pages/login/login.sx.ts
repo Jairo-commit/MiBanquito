@@ -18,16 +18,11 @@ export const formCardSx: SxProps<Theme> = (theme) => ({
     borderRadius: "12px",
     boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.1)}`,
     width: "100%",
-    maxWidth: 480,
+    maxWidth: 400,
     padding: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
     gap: theme.spacing(2),
-});
-
-export const errorAlertSx: SxProps<Theme> = (theme) => ({
-    borderRadius: "8px",
-    fontSize: theme.typography.body2.fontSize,
 });
 
 export const titleSx: SxProps<Theme> = (theme) => ({
@@ -37,4 +32,25 @@ export const titleSx: SxProps<Theme> = (theme) => ({
     WebkitTextFillColor: "transparent",
     textAlign: "center",
     mb: 1,
+});
+
+export const errorAlertSx: SxProps<Theme> = (theme) => ({
+    borderRadius: "8px",
+    fontSize: theme.typography.body2.fontSize,
+});
+
+export const registerLinkSx: SxProps<Theme> = (theme) => ({
+    textAlign: "center",
+    fontSize: theme.typography.body2.fontSize,
+    color: theme.palette.text.secondary,
+    mt: 1,
+});
+
+export const linkSx: SxProps<Theme> = (theme) => ({
+    color: theme.palette.primary.main,
+    textDecoration: "none",
+    fontWeight: 600,
+    "&:hover": {
+        textDecoration: "underline",
+    },
 });
