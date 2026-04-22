@@ -9,3 +9,4 @@ pytest-django
 pytest-mock
 black
 djangorestframework-simplejwt
+factory-boy
