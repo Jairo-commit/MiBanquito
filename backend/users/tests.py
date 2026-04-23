@@ -87,7 +87,7 @@ class TestRegisterEndpoint:
 @pytest.mark.django_db
 class TestLoginEndpoint:
     def test_login_with_valid_credentials_returns_tokens(self, api_client):
-        user = UserFactory(username="loginuser")
+        UserFactory(username="loginuser")
         response = api_client.post(LOGIN_URL, {"username": "loginuser", "password": "SecurePass1@"})
 
         assert response.status_code == 200

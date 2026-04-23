@@ -117,3 +117,5 @@ django/db_dumps/
 # Local development environment files
 frontend/node_modules/*
 frontend/dist/
+
+.vscode/
