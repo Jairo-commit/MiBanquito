@@ -118,4 +118,4 @@ django/db_dumps/
 frontend/node_modules/*
 frontend/dist/
 
-.vscode/backend/reports/
+backend/reports/
