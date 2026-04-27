@@ -14,9 +14,10 @@ interface FormTextFieldProps {
     field: StringField;
     label: string;
     type?: string;
+    testId?: string;
 }
 
-export function FormTextField({ field, label, type = "text" }: FormTextFieldProps) {
+export function FormTextField({ field, label, type = "text", testId }: FormTextFieldProps) {
     const error = getFieldError(field.state.meta.errors);
     return (
         <TextField
@@ -28,6 +29,10 @@ export function FormTextField({ field, label, type = "text" }: FormTextFieldProp
             onBlur={field.handleBlur}
             error={!!error}
             helperText={error}
+            slotProps={{
+                htmlInput: testId ? { "data-testid": testId } : {},
+                formHelperText: testId ? { "data-testid": `${testId}-error` } : {},
+            }}
         />
     );
 }

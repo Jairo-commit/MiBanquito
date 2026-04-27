@@ -39,34 +39,37 @@ export function Login() {
                     form.handleSubmit();
                 }}
             >
-                <Typography variant="h5" sx={styles.titleSx}>
+                <Typography variant="h5" sx={styles.titleSx} data-testid="login-heading">
                     Welcome back
                 </Typography>
 
-                {loginMutation.isError &&
-                    parseApiError(loginMutation.error).map((message) => (
-                        <Alert key={message} severity="error" sx={styles.errorAlertSx}>
-                            {message}
-                        </Alert>
-                    ))}
+                {loginMutation.isError && (
+                    <Box data-testid="login-error">
+                        {parseApiError(loginMutation.error).map((message) => (
+                            <Alert key={message} severity="error" sx={styles.errorAlertSx}>
+                                {message}
+                            </Alert>
+                        ))}
+                    </Box>
+                )}
 
                 <form.Field name="username">
-                    {(field) => <FormTextField field={field} label="Username" />}
+                    {(field) => <FormTextField field={field} label="Username" testId="login-username" />}
                 </form.Field>
 
                 <form.Field name="password">
                     {(field) => (
-                        <FormTextField field={field} label="Password" type="password" />
+                        <FormTextField field={field} label="Password" type="password" testId="login-password" />
                     )}
                 </form.Field>
 
-                <PrimaryFormButton disabled={loginMutation.isPending}>
+                <PrimaryFormButton disabled={loginMutation.isPending} testId="login-submit">
                     Sign in
                 </PrimaryFormButton>
 
                 <Typography sx={styles.registerLinkSx}>
                     {"Don't have an account? "}
-                    <Link href="/register" sx={styles.linkSx}>
+                    <Link href="/register" sx={styles.linkSx} data-testid="login-register-link">
                         Register
                     </Link>
                 </Typography>

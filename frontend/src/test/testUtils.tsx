@@ -1,7 +1,8 @@
 import React from "react";
-import { render, type RenderOptions, type RenderResult } from "@testing-library/react";
+import { render, screen, waitFor, within, fireEvent, type RenderOptions, type RenderResult } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, type MemoryRouterProps } from "react-router-dom";
+import { userEvent } from "@testing-library/user-event";
 import { CustomTheme } from "~/mui/customTheme";
 
 interface RenderWithProvidersOptions extends Omit<RenderOptions, "wrapper"> {
@@ -36,5 +37,5 @@ export function renderWithProviders(
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 }
 
-export { screen, waitFor, within, fireEvent } from "@testing-library/react";
-export { userEvent } from "@testing-library/user-event";
+export { screen, waitFor, within, fireEvent };
+export const setup = () => userEvent.setup();

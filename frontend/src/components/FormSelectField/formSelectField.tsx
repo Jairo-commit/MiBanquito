@@ -19,13 +19,14 @@ interface FormSelectFieldProps<TValue extends string> {
     field: SelectField<TValue>;
     label: string;
     options: readonly SelectOption<TValue>[];
+    testId?: string;
 }
 
-export function FormSelectField<TValue extends string>({ field, label, options }: FormSelectFieldProps<TValue>) {
+export function FormSelectField<TValue extends string>({ field, label, options, testId }: FormSelectFieldProps<TValue>) {
     const labelId = `${label.toLowerCase().replace(/\s+/g, "-")}-label`;
     const error = getFieldError(field.state.meta.errors);
     return (
-        <FormControl fullWidth error={!!error}>
+        <FormControl fullWidth error={!!error} data-testid={testId}>
             <InputLabel id={labelId}>{label}</InputLabel>
             <Select
                 labelId={labelId}

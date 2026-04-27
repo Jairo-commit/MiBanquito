@@ -2,8 +2,8 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "~/test/mocks/server";
 import { authTokenFactory } from "~/test/factories/authTokenFactory";
-import { renderWithProviders, screen, waitFor, userEvent } from "~/test/testUtils";
-import { Login } from "../login";
+import { renderWithProviders, screen, waitFor, setup } from "~/test/testUtils";
+import { Login } from "./login";
 
 const mockNavigate = vi.hoisted(() => vi.fn());
 
@@ -21,20 +21,20 @@ describe("Login", () => {
   it("renders the login form", () => {
     renderWithProviders(<Login />);
 
-    expect(screen.getByRole("heading", { name: /welcome back/i })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: /username/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /register/i })).toBeInTheDocument();
+    expect(screen.getByTestId("login-heading")).toBeInTheDocument();
+    expect(screen.getByTestId("login-username")).toBeInTheDocument();
+    expect(screen.getByTestId("login-password")).toBeInTheDocument();
+    expect(screen.getByTestId("login-submit")).toBeInTheDocument();
+    expect(screen.getByTestId("login-register-link")).toBeInTheDocument();
   });
 
   it("stores tokens in localStorage and navigates to / on success", async () => {
-    const user = userEvent.setup();
+    const user = setup();
     renderWithProviders(<Login />);
 
-    await user.type(screen.getByRole("textbox", { name: /username/i }), "testuser");
-    await user.type(screen.getByLabelText(/password/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
+    await user.type(screen.getByTestId("login-username"), "testuser");
+    await user.type(screen.getByTestId("login-password"), "secret123");
+    await user.click(screen.getByTestId("login-submit"));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
     expect(localStorage.getItem("access")).toBe("fake-access-token");
@@ -47,12 +47,12 @@ describe("Login", () => {
         HttpResponse.json(authTokenFactory({ access: "custom-access-token" }))
       )
     );
-    const user = userEvent.setup();
+    const user = setup();
     renderWithProviders(<Login />);
 
-    await user.type(screen.getByRole("textbox", { name: /username/i }), "testuser");
-    await user.type(screen.getByLabelText(/password/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
+    await user.type(screen.getByTestId("login-username"), "testuser");
+    await user.type(screen.getByTestId("login-password"), "secret123");
+    await user.click(screen.getByTestId("login-submit"));
 
     await waitFor(() => expect(localStorage.getItem("access")).toBe("custom-access-token"));
   });
@@ -66,15 +66,15 @@ describe("Login", () => {
         )
       )
     );
-    const user = userEvent.setup();
+    const user = setup();
     renderWithProviders(<Login />);
 
-    await user.type(screen.getByRole("textbox", { name: /username/i }), "wrong");
-    await user.type(screen.getByLabelText(/password/i), "wrong");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
+    await user.type(screen.getByTestId("login-username"), "wrong");
+    await user.type(screen.getByTestId("login-password"), "wrong");
+    await user.click(screen.getByTestId("login-submit"));
 
-    await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
-    expect(screen.getByRole("alert")).toHaveTextContent(
+    await waitFor(() => expect(screen.getByTestId("login-error")).toBeInTheDocument());
+    expect(screen.getByTestId("login-error")).toHaveTextContent(
       "detail: No active account found with the given credentials"
     );
   });
@@ -88,16 +88,16 @@ describe("Login", () => {
         )
       )
     );
-    const user = userEvent.setup();
+    const user = setup();
     renderWithProviders(<Login />);
 
-    await user.type(screen.getByRole("textbox", { name: /username/i }), "wrong");
-    await user.type(screen.getByLabelText(/password/i), "wrong");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
+    await user.type(screen.getByTestId("login-username"), "wrong");
+    await user.type(screen.getByTestId("login-password"), "wrong");
+    await user.click(screen.getByTestId("login-submit"));
 
-    await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
-    expect(screen.getByRole("alert")).toHaveTextContent("Invalid credentials");
-    expect(screen.getByRole("alert")).not.toHaveTextContent("non_field_errors");
+    await waitFor(() => expect(screen.getByTestId("login-error")).toBeInTheDocument());
+    expect(screen.getByTestId("login-error")).toHaveTextContent("Invalid credentials");
+    expect(screen.getByTestId("login-error")).not.toHaveTextContent("non_field_errors");
   });
 
   it("disables the submit button while the mutation is pending", async () => {
@@ -107,13 +107,13 @@ describe("Login", () => {
         return HttpResponse.json(authTokenFactory());
       })
     );
-    const user = userEvent.setup();
+    const user = setup();
     renderWithProviders(<Login />);
 
-    await user.type(screen.getByRole("textbox", { name: /username/i }), "testuser");
-    await user.type(screen.getByLabelText(/password/i), "secret123");
+    await user.type(screen.getByTestId("login-username"), "testuser");
+    await user.type(screen.getByTestId("login-password"), "secret123");
 
-    const button = screen.getByRole("button", { name: /sign in/i });
+    const button = screen.getByTestId("login-submit");
     await user.click(button);
 
     expect(button).toBeDisabled();

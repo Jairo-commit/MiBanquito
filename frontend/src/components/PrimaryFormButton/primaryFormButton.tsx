@@ -6,12 +6,14 @@ interface PrimaryFormButtonProps {
   children: ReactNode;
   type?: "submit" | "button" | "reset";
   disabled?: boolean;
+  testId?: string;
 }
 
 export function PrimaryFormButton({
   children,
   type = "submit",
   disabled,
+  testId,
 }: PrimaryFormButtonProps) {
   return (
     <Button
@@ -20,6 +22,7 @@ export function PrimaryFormButton({
       fullWidth
       disabled={disabled}
       sx={styles.primaryFormButtonSx}
+      data-testid={testId}
     >
       {children}
     </Button>

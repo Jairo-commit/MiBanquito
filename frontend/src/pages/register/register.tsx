@@ -49,30 +49,33 @@ export function Register() {
           form.handleSubmit();
         }}
       >
-        <Typography variant="h5" sx={styles.titleSx}>
+        <Typography variant="h5" sx={styles.titleSx} data-testid="register-heading">
           Create your account
         </Typography>
 
-        {registerMutation.isError &&
-          parseApiError(registerMutation.error).map((message) => (
-            <Alert key={message} severity="error" sx={styles.errorAlertSx}>
-              {message}
-            </Alert>
-          ))}
+        {registerMutation.isError && (
+          <Box data-testid="register-error">
+            {parseApiError(registerMutation.error).map((message) => (
+              <Alert key={message} severity="error" sx={styles.errorAlertSx}>
+                {message}
+              </Alert>
+            ))}
+          </Box>
+        )}
 
         <form.Field name="username">
-          {(field) => <FormTextField field={field} label="Username" />}
+          {(field) => <FormTextField field={field} label="Username" testId="register-username" />}
         </form.Field>
 
         <form.Field name="email">
           {(field) => (
-            <FormTextField field={field} label="Email" type="email" />
+            <FormTextField field={field} label="Email" type="email" testId="register-email" />
           )}
         </form.Field>
 
         <form.Field name="password">
           {(field) => (
-            <FormTextField field={field} label="Password" type="password" />
+            <FormTextField field={field} label="Password" type="password" testId="register-password" />
           )}
         </form.Field>
 
@@ -82,6 +85,7 @@ export function Register() {
               field={field}
               label="Confirm Password"
               type="password"
+              testId="register-confirm-password"
             />
           )}
         </form.Field>
@@ -92,29 +96,30 @@ export function Register() {
               field={field}
               label="Document Type"
               options={DOCUMENT_TYPE_OPTIONS}
+              testId="register-document-type"
             />
           )}
         </form.Field>
 
         <form.Field name="document_number">
-          {(field) => <FormTextField field={field} label="Document Number" />}
+          {(field) => <FormTextField field={field} label="Document Number" testId="register-document-number" />}
         </form.Field>
 
         <form.Field name="full_name">
           {(field) => (
-            <FormTextField field={field} label="Full Name (optional)" />
+            <FormTextField field={field} label="Full Name (optional)" testId="register-full-name" />
           )}
         </form.Field>
 
         <form.Field name="city">
-          {(field) => <FormTextField field={field} label="City (optional)" />}
+          {(field) => <FormTextField field={field} label="City (optional)" testId="register-city" />}
         </form.Field>
 
         <form.Field name="phone">
-          {(field) => <FormTextField field={field} label="Phone (optional)" />}
+          {(field) => <FormTextField field={field} label="Phone (optional)" testId="register-phone" />}
         </form.Field>
 
-        <PrimaryFormButton disabled={registerMutation.isPending}>
+        <PrimaryFormButton disabled={registerMutation.isPending} testId="register-submit">
           Register
         </PrimaryFormButton>
       </Box>

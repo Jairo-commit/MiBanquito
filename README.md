@@ -92,4 +92,46 @@ docker compose ps
 
 ---
 
+## 🧪 Running Tests
+
+### Backend (pytest)
+
+```bash
+# Run the full test suite
+docker compose exec backend pytest
+
+# Run a single test file
+docker compose exec backend pytest transactions/tests.py
+
+# Run with verbose output
+docker compose exec backend pytest -v
+
+# Run with coverage report
+docker compose exec backend pytest --cov
+```
+
+### Frontend (Vitest)
+
+The frontend dependencies must be installed locally first (see step 2.1). Then run from the `frontend/` directory:
+
+```bash
+# One-shot run (CI-friendly)
+cd frontend
+npm run test:run
+
+# Watch mode (re-runs on file changes during development)
+npm test
+
+# With HTML coverage report (output in frontend/coverage/index.html)
+npm run coverage
+```
+
+Or via Docker if the frontend container is running:
+
+```bash
+docker compose exec frontend npm run test:run
+```
+
+---
+
 *Copyright © 2026 MiBanquito - Institución Universitaria de Envigado*
