@@ -1,9 +1,11 @@
 import pytest
+from django.urls import reverse
 from rest_framework.test import APIClient
 from users.factories import UserFactory
 
-REGISTER_URL = "/api/user/register/"
-LOGIN_URL = "/api/token/"
+REGISTER_URL = reverse("register")
+LOGIN_URL = reverse("token_obtain")
+ME_URL = reverse("current-user")
 
 VALID_REGISTER_PAYLOAD = {
     "username": "newuser",
@@ -119,3 +121,46 @@ class TestLoginEndpoint:
         response = api_client.post(LOGIN_URL, payload)
 
         assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestCurrentUserEndpoint:
+    def test_unauthenticated_returns_401(self, api_client):
+        response = api_client.get(ME_URL)
+
+        assert response.status_code == 401
+
+    def test_returns_own_user_data(self, api_client):
+        user = UserFactory(full_name="Ada Lovelace")
+        api_client.force_authenticate(user=user)
+        response = api_client.get(ME_URL)
+
+        assert response.status_code == 200
+        assert response.data["username"] == user.username
+        assert response.data["email"] == user.email
+        assert response.data["full_name"] == "Ada Lovelace"
+        assert response.data["document_type"] == user.document_type
+        assert response.data["document_number"] == user.document_number
+
+    def test_password_not_returned(self, api_client):
+        user = UserFactory()
+        api_client.force_authenticate(user=user)
+        response = api_client.get(ME_URL)
+
+        assert "password" not in response.data
+
+    def test_does_not_return_another_users_data(self, api_client):
+        user_a = UserFactory()
+        user_b = UserFactory()
+        api_client.force_authenticate(user=user_a)
+        response = api_client.get(ME_URL)
+
+        assert response.data["username"] == user_a.username
+        assert response.data["username"] != user_b.username
+
+    def test_post_method_not_allowed(self, api_client):
+        user = UserFactory()
+        api_client.force_authenticate(user=user)
+        response = api_client.post(ME_URL, {})
+
+        assert response.status_code == 405
