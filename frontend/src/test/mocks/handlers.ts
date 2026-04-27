@@ -12,4 +12,8 @@ export const handlers = [
   http.post(`${BASE}/user/register/`, () => {
     return HttpResponse.json(userResponseFactory(), { status: 201 });
   }),
+
+  http.get(`${BASE}/user/me/`, () => {
+    return HttpResponse.json(userResponseFactory());
+  }),
 ];

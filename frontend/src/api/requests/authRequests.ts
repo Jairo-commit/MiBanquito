@@ -7,3 +7,6 @@ export const postRegister = (payload: RegisterPayload): Promise<UserResponse> =>
 
 export const postLogin = (payload: LoginPayload): Promise<AuthToken> =>
   api.post("token/", payload).then((res) => res.data);
+
+export const getMe = (): Promise<UserResponse> =>
+  api.get("user/me/").then((res) => res.data);

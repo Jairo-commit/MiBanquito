@@ -1,9 +1,10 @@
 import { Box } from "@mui/material";
+import { Navbar } from "~/components/Navbar/navbar";
 
-export function Home(){
-    return (
-        <Box>
-            Welcome to MiBanquito
-        </Box>
-    );
+export function Home() {
+  return (
+    <Box>
+      <Navbar />
+    </Box>
+  );
 }
