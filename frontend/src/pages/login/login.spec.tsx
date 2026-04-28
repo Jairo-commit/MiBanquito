@@ -44,7 +44,7 @@ describe("Login", () => {
   it("stores custom token from factory override", async () => {
     server.use(
       http.post("http://localhost:8000/token/", () =>
-        HttpResponse.json(authTokenFactory({ access: "custom-access-token" }))
+        HttpResponse.json(authTokenFactory.build({ access: "custom-access-token" }))
       )
     );
     const user = setup();
@@ -104,7 +104,7 @@ describe("Login", () => {
     server.use(
       http.post("http://localhost:8000/token/", async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));
-        return HttpResponse.json(authTokenFactory());
+        return HttpResponse.json(authTokenFactory.build());
       })
     );
     const user = setup();

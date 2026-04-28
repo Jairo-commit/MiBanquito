@@ -54,7 +54,7 @@ describe("Register", () => {
   it("uses factory data in success response", async () => {
     server.use(
       http.post("http://localhost:8000/user/register/", () =>
-        HttpResponse.json(userResponseFactory({ username: "jairo" }), { status: 201 })
+        HttpResponse.json(userResponseFactory.build({ username: "jairo" }), { status: 201 })
       )
     );
     const user = setup();

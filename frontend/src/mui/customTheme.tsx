@@ -18,6 +18,21 @@ declare module "@mui/material/styles" {
             brandText?: string;
         };
     }
+    interface TypographyVariants {
+        accountBalance: React.CSSProperties;
+        accountNumber: React.CSSProperties;
+    }
+    interface TypographyVariantsOptions {
+        accountBalance?: React.CSSProperties;
+        accountNumber?: React.CSSProperties;
+    }
+}
+
+declare module "@mui/material/Typography" {
+    interface TypographyPropsVariantOverrides {
+        accountBalance: true;
+        accountNumber: true;
+    }
 }
 
 export const customTheme = createTheme({
@@ -53,6 +68,38 @@ export const customTheme = createTheme({
         warning: {
             main: "#F59E0B",
             light: "#FEF3C7",
+        },
+    },
+    typography: {
+        accountBalance: {
+            fontWeight: 700,
+            fontSize: "3rem",
+            lineHeight: 1.2,
+        },
+        accountNumber: {
+            fontSize: "0.875rem",
+            letterSpacing: "0.1em",
+        },
+    },
+    components: {
+        MuiTypography: {
+            variants: [
+                {
+                    props: { variant: "accountBalance" },
+                    style: ({ theme }) => ({
+                        background: theme.palette.gradients.brandText,
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                    }),
+                },
+                {
+                    props: { variant: "accountNumber" },
+                    style: ({ theme }) => ({
+                        color: theme.palette.secondary.main,
+                    }),
+                },
+            ],
         },
     },
 });
