@@ -1,6 +1,6 @@
 import api from "~/api/api";
-import type { RegisterPayload, UserResponse } from "~/models/user";
-import type { AuthToken, LoginPayload } from "~/models/authToken";
+import type { RegisterPayload, UserResponse } from "~/models/user.model";
+import type { AuthToken, LoginPayload } from "~/models/authToken.model";
 
 export const postRegister = (payload: RegisterPayload): Promise<UserResponse> =>
   api.post("user/register/", payload).then((res) => res.data);
