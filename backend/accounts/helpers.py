@@ -1,6 +1,4 @@
-import random
 from decimal import Decimal
-from backend.accounts.models import SavingsAccount
 from django.core.exceptions import ValidationError
 
 MIN_OPENING_BALANCE = Decimal("100000")
@@ -11,14 +9,10 @@ def validate_opening_balance(value: Decimal) -> None:
         raise ValidationError(
             f"The minimum balance to open an account is ${MIN_OPENING_BALANCE:,.0f}."
         )
-
-
-def validate_positive_amount(value: Decimal, label: str = "amount") -> None:
-    if value <= Decimal("0"):
-        raise ValidationError(f"The {label} must be greater than zero.")
-
+    
 
 def validate_account_is_active(account) -> None:
     if not account.is_active:
         raise ValidationError(
-            f"Account {account.account_number} is inactive and cannot perform operations.")
+            f"Account {account.account_number} is inactive and cannot perform operations."
+        )
