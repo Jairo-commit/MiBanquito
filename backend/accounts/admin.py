@@ -1,5 +1,4 @@
 from django.contrib import admin
-from accounts.models import AccountMovement, SavingsAccount
+from accounts.models import SavingsAccount
 
 admin.site.register(SavingsAccount)
-admin.site.register(AccountMovement)

@@ -38,6 +38,8 @@ django/venv/*
 
 # Test results
 **/test-results/*
+.coverage
+**/.coverage
 
 # Uploaded files
 **/uploaded_files/*
@@ -101,12 +103,7 @@ react/.vite/
 # Cursor AI
 **/.cursor/**
 
-# Claude code
-**/.claude/**
 **/docs/prompts/**
-**/claude.md
-CLAUDE.md
-CLAUDE.local.md
 
 scripts/smartsheet-data/
 
