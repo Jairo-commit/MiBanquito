@@ -9,10 +9,3 @@ def validate_opening_balance(value: Decimal) -> None:
         raise ValidationError(
             f"The minimum balance to open an account is ${MIN_OPENING_BALANCE:,.0f}."
         )
-    
-
-def validate_account_is_active(account) -> None:
-    if not account.is_active:
-        raise ValidationError(
-            f"Account {account.account_number} is inactive and cannot perform operations."
-        )

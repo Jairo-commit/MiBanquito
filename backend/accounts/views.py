@@ -5,13 +5,13 @@ from accounts.serializers import SavingsAccountSerializer
 
 
 class SavingsAccountViewSet(viewsets.ModelViewSet):
-    queryset = SavingsAccount.objects.all()
     serializer_class = SavingsAccountSerializer
     permission_classes = [IsAuthenticated]
-    
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return SavingsAccount.objects.all()
+        return SavingsAccount.objects.filter(user=self.request.user)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-def create(self, validated_data):
-    return SavingsAccount.objects.create_account(**validated_data)

@@ -1,4 +1,3 @@
-import random
 from decimal import Decimal
 from django.db import models
 import secrets

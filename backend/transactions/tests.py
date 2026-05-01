@@ -26,8 +26,8 @@ def authenticated_client(api_client):
 
 
 @pytest.fixture
-def account(db):
-    user = UserFactory()
+def account(authenticated_client):
+    _, user = authenticated_client
     return SavingsAccount.objects.create_account(user=user, balance=Decimal("500000"))
 
 
@@ -312,3 +312,68 @@ class TestTransactionImmutability:
         response = client.delete(transaction_detail_url(txn.id))
 
         assert response.status_code == 405
+
+
+@pytest.mark.django_db
+class TestTransactionVisibility:
+    def test_user_can_see_transaction_as_destination(self, authenticated_client, second_account):
+        client, user = authenticated_client
+        user_account = SavingsAccount.objects.create_account(user=user, balance=Decimal("500000"))
+        Transaction.objects.create_internal_transaction(
+            source_account=second_account,
+            destination_account=user_account,
+            amount=Decimal("100000"),
+        )
+        response = client.get(TRANSACTIONS_URL)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+
+    def test_user_cannot_see_unrelated_transactions(self, authenticated_client, second_account):
+        client, _ = authenticated_client
+        third_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        Transaction.objects.create_internal_transaction(
+            source_account=second_account,
+            destination_account=third_account,
+            amount=Decimal("100000"),
+        )
+        response = client.get(TRANSACTIONS_URL)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+
+    def test_superuser_can_list_all_transactions(self, api_client, second_account):
+        superuser = UserFactory(is_superuser=True, is_staff=True)
+        third_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        Transaction.objects.create_internal_transaction(
+            source_account=second_account,
+            destination_account=third_account,
+            amount=Decimal("100000"),
+        )
+        api_client.force_authenticate(user=superuser)
+        response = api_client.get(TRANSACTIONS_URL)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+
+
+@pytest.mark.django_db
+class TestTransactionSourceOwnership:
+    def test_user_cannot_transfer_from_another_users_account(self, authenticated_client, second_account):
+        client, _ = authenticated_client
+        third_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        payload = {
+            "source_account": second_account.id,
+            "destination_account": third_account.id,
+            "transaction_type": "INTERNAL",
+            "amount": "100000.00",
+        }
+        response = client.post(TRANSACTIONS_URL, payload)
+
+        assert response.status_code == 403

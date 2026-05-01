@@ -3,7 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from users.views import CreateUserView, RetrieveCurrentUserView
-from accounts.views import SavingsAccountViewSet 
+from accounts.views import SavingsAccountViewSet
 from transactions.views import TransactionViewSet
 from products.views import CDTViewSet, LoanRequestViewSet
 

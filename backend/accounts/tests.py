@@ -134,6 +134,35 @@ class TestRetrieveSavingsAccount:
         assert "created_at" in account_data
 
 
+    def test_user_cannot_see_other_users_accounts(self, authenticated_client):
+        client, _ = authenticated_client
+        other_user = UserFactory()
+        SavingsAccount.objects.create_account(user=other_user, balance=Decimal("150000"))
+        response = client.get(ACCOUNTS_URL)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+
+    def test_user_cannot_retrieve_other_users_account(self, authenticated_client):
+        client, _ = authenticated_client
+        other_user = UserFactory()
+        account = SavingsAccount.objects.create_account(user=other_user, balance=Decimal("150000"))
+        response = client.get(account_detail_url(account.id))
+
+        assert response.status_code == 404
+
+    def test_superuser_can_list_all_accounts(self, api_client):
+        superuser = UserFactory(is_superuser=True, is_staff=True)
+        other_user = UserFactory()
+        SavingsAccount.objects.create_account(user=other_user, balance=Decimal("150000"))
+        SavingsAccount.objects.create_account(user=other_user, balance=Decimal("200000"))
+        api_client.force_authenticate(user=superuser)
+        response = api_client.get(ACCOUNTS_URL)
+
+        assert response.status_code == 200
+        assert response.data["count"] == 2
+
+
 @pytest.mark.django_db
 class TestUpdateSavingsAccount:
     def test_unauthenticated_user_cannot_update_account(self, authenticated_client):
