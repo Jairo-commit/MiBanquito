@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from transactions.manager import TransactionManager
 
 
 class Transaction(models.Model):
@@ -12,6 +13,8 @@ class Transaction(models.Model):
         PENDING = "PENDING", "Pending"
         COMPLETED = "COMPLETED", "Completed"
         FAILED = "FAILED", "Failed"
+
+    objects = TransactionManager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     source_account = models.ForeignKey(
@@ -41,3 +44,7 @@ class Transaction(models.Model):
     reference = models.UUIDField(unique=True, default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=255, blank=True)
+
+
+    def __str__(self):
+        return f"{self.transaction_type} | {self.amount} | {self.status}"

@@ -137,7 +137,7 @@ class TestRetrieveSavingsAccount:
 @pytest.mark.django_db
 class TestUpdateSavingsAccount:
     def test_unauthenticated_user_cannot_update_account(self, authenticated_client):
-        client, user = authenticated_client
+        _, user = authenticated_client
         account = SavingsAccount.objects.create_account(user=user, balance=Decimal("150000"))
         fresh_client = APIClient()
         response = fresh_client.patch(account_detail_url(account.id), {"balance": "200000.00"})

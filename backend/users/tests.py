@@ -7,10 +7,14 @@ REGISTER_URL = reverse("register")
 LOGIN_URL = reverse("token_obtain")
 ME_URL = reverse("current-user")
 
+# Test credentials — not real passwords
+VALID_TEST_CREDENTIALS = "SecurePass1@"
+INVALID_TEST_CREDENTIALS = "WrongPass!"
+
 VALID_REGISTER_PAYLOAD = {
     "username": "newuser",
     "email": "newuser@example.com",
-    "password": "SecurePass1@",
+    "password": VALID_TEST_CREDENTIALS,
     "document_type": "CC",
     "document_number": "987654321",
 }
@@ -90,7 +94,7 @@ class TestRegisterEndpoint:
 class TestLoginEndpoint:
     def test_login_with_valid_credentials_returns_tokens(self, api_client):
         UserFactory(username="loginuser")
-        response = api_client.post(LOGIN_URL, {"username": "loginuser", "password": "SecurePass1@"})
+        response = api_client.post(LOGIN_URL, {"username": "loginuser", "password": VALID_TEST_CREDENTIALS})
 
         assert response.status_code == 200
         assert "access" in response.data
@@ -99,8 +103,8 @@ class TestLoginEndpoint:
     @pytest.mark.parametrize(
         "payload",
         [
-            pytest.param({"username": "loginuser", "password": "WrongPass!"}, id="wrong_password"),
-            pytest.param({"username": "nobody", "password": "SecurePass1@"}, id="nonexistent_user"),
+            pytest.param({"username": "loginuser", "password": INVALID_TEST_CREDENTIALS}, id="wrong_password"),
+            pytest.param({"username": "nobody", "password": VALID_TEST_CREDENTIALS}, id="nonexistent_user"),
         ],
     )
     def test_login_with_invalid_credentials_returns_401(self, api_client, payload):
@@ -113,7 +117,7 @@ class TestLoginEndpoint:
         "payload",
         [
             pytest.param({"username": "loginuser"}, id="missing_password"),
-            pytest.param({"password": "SecurePass1@"}, id="missing_username"),
+            pytest.param({"password": VALID_TEST_CREDENTIALS}, id="missing_username"),
         ],
     )
     def test_login_with_missing_fields_returns_400(self, api_client, payload):
