@@ -21,10 +21,14 @@ declare module "@mui/material/styles" {
     interface TypographyVariants {
         accountBalance: React.CSSProperties;
         accountNumber: React.CSSProperties;
+        transactionAmount: React.CSSProperties;
+        transactionDate: React.CSSProperties;
     }
     interface TypographyVariantsOptions {
         accountBalance?: React.CSSProperties;
         accountNumber?: React.CSSProperties;
+        transactionAmount?: React.CSSProperties;
+        transactionDate?: React.CSSProperties;
     }
 }
 
@@ -32,6 +36,8 @@ declare module "@mui/material/Typography" {
     interface TypographyPropsVariantOverrides {
         accountBalance: true;
         accountNumber: true;
+        transactionAmount: true;
+        transactionDate: true;
     }
 }
 
@@ -80,6 +86,13 @@ export const customTheme = createTheme({
             fontSize: "0.875rem",
             letterSpacing: "0.1em",
         },
+        transactionAmount: {
+            fontWeight: 600,
+        },
+        transactionDate: {
+            fontSize: "0.75rem",
+            textAlign: "right",
+        },
     },
     components: {
         MuiTypography: {
@@ -97,6 +110,12 @@ export const customTheme = createTheme({
                     props: { variant: "accountNumber" },
                     style: ({ theme }) => ({
                         color: theme.palette.secondary.main,
+                    }),
+                },
+                {
+                    props: { variant: "transactionDate" },
+                    style: ({ theme }) => ({
+                        color: theme.palette.text.secondary,
                     }),
                 },
             ],

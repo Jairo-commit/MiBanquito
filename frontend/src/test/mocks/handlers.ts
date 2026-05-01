@@ -2,8 +2,9 @@ import { http, HttpResponse } from "msw";
 import { authTokenFactory } from "~/test/factories/authTokenFactory";
 import { userResponseFactory } from "~/test/factories/userResponseFactory";
 import { accountFactory } from "~/test/factories/accountFactory";
+import { transactionFactory } from "~/test/factories/transactionFactory";
 
-const BASE = "http://localhost:8000/api";
+const BASE = "http://localhost:8000";
 
 export const handlers = [
   http.post(`${BASE}/token/`, () => {
@@ -20,5 +21,9 @@ export const handlers = [
 
   http.get(`${BASE}/accounts/`, () => {
     return HttpResponse.json({ results: [accountFactory.build()] });
+  }),
+
+  http.get(`${BASE}/transactions/`, () => {
+    return HttpResponse.json({ results: [transactionFactory.build()] });
   }),
 ];

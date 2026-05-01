@@ -11,4 +11,5 @@ export type UserResponse = {
   full_name?: string;
   city?: string;
   phone?: string;
+  is_superuser: boolean;
 };

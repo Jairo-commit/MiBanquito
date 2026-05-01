@@ -6,12 +6,7 @@ from transactions.models import Transaction
 from transactions.serializers import TransactionSerializer
 
 
-class TransactionViewSet(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
+class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
@@ -21,10 +16,4 @@ class TransactionViewSet(
             return Transaction.objects.all()
         return Transaction.objects.filter(
             Q(source_account__user=user) | Q(destination_account__user=user)
-        )
-
-    def perform_create(self, serializer):
-        source_account = serializer.validated_data.get("source_account")
-        if source_account and source_account.user != self.request.user:
-            raise PermissionDenied("You can only transfer from your own accounts.")
-        serializer.save()
+        ).distinct()

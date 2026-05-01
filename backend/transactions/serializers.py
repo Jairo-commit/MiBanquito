@@ -10,12 +10,21 @@ from transactions.helpers import (
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    source_account_number = serializers.SerializerMethodField()
+    source_account_holder = serializers.SerializerMethodField()
+    destination_account_number = serializers.SerializerMethodField()
+    destination_account_holder = serializers.SerializerMethodField()
+
     class Meta:
         model = Transaction
         fields = [
             "id",
             "source_account",
             "destination_account",
+            "source_account_number",
+            "source_account_holder",
+            "destination_account_number",
+            "destination_account_holder",
             "transaction_type",
             "amount",
             "status",
@@ -23,6 +32,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             "created_at",
             "description",
         ]
+<<<<<<< Updated upstream
         extra_kwargs = {
             "status": {"read_only": True},
             "reference": {"read_only": True},
@@ -70,3 +80,25 @@ class TransactionSerializer(serializers.ModelSerializer):
 
         except DjangoValidationError as e:
             raise DRFValidationError({"detail": e.message})
+=======
+
+    def get_source_account_number(self, obj):
+        if obj.source_account:
+            return obj.source_account.account_number
+        return None
+
+    def get_source_account_holder(self, obj):
+        if obj.source_account:
+            return obj.source_account.user.full_name or obj.source_account.user.username
+        return None
+
+    def get_destination_account_number(self, obj):
+        if obj.destination_account:
+            return obj.destination_account.account_number
+        return None
+
+    def get_destination_account_holder(self, obj):
+        if obj.destination_account:
+            return obj.destination_account.user.full_name or obj.destination_account.user.username
+        return None
+>>>>>>> Stashed changes

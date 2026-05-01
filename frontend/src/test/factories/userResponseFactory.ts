@@ -10,4 +10,5 @@ export const userResponseFactory = Factory.Sync.makeFactory<UserResponse>({
     full_name: Factory.each((i: number) => `Test User ${i + 1}`),
     city: "Bogotá",
     phone: "3001234567",
+    is_superuser: false,
 });
