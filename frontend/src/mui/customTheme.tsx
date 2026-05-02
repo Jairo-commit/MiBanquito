@@ -96,6 +96,11 @@ export const customTheme = createTheme({
     },
     components: {
         MuiTypography: {
+            styleOverrides: {
+                h6: {
+                    fontWeight: 700,
+                },
+            },
             variants: [
                 {
                     props: { variant: "accountBalance" },

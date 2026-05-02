@@ -97,6 +97,42 @@ describe("Navbar", () => {
     );
   });
 
+  it("navigates to /logout when clicking Logout", async () => {
+    const user = setup();
+    renderWithProviders(<Navbar />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("navbar-user-menu-btn")).toBeInTheDocument()
+    );
+    await user.click(screen.getByTestId("navbar-user-menu-btn"));
+    await waitFor(() =>
+      expect(screen.getByTestId("navbar-logout-item")).toBeVisible()
+    );
+
+    await user.click(screen.getByTestId("navbar-logout-item"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/logout");
+  });
+
+  it("opens profile modal when clicking Profile", async () => {
+    const user = setup();
+    renderWithProviders(<Navbar />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("navbar-user-menu-btn")).toBeInTheDocument()
+    );
+    await user.click(screen.getByTestId("navbar-user-menu-btn"));
+    await waitFor(() =>
+      expect(screen.getByTestId("navbar-profile-item")).toBeVisible()
+    );
+
+    await user.click(screen.getByTestId("navbar-profile-item"));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("profile-modal")).toBeInTheDocument()
+    );
+  });
+
   it("navigates to / when clicking Account button", async () => {
     const user = setup();
     renderWithProviders(<Navbar />);

@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(docker compose *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version'\\), d.get\\('main'\\), list\\(d.get\\('exports',{}\\).keys\\(\\)\\)[:5]\\)\")",
+      "Bash(/home/jairo/Desktop/learning/MiBanquito/venv/bin/python -c \"import rest_framework; print\\(rest_framework.__version__\\)\")",
+      "Bash(/home/jairo/Desktop/learning/MiBanquito/venv/bin/pip install *)",
+      "Bash(flake8 --verbose)",
+      "Bash(pip show *)",
+      "Bash(pip3 show *)",
+      "Bash(npm run *)",
+      "Bash(npx vitest *)",
+      "Bash(node_modules/.bin/vitest run *)",
+      "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\(json.dumps\\(p.get\\('exports',{}\\), indent=2\\)\\)\")",
+      "Bash(node_modules/.bin/vitest --version)",
+      "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\(p.get\\('version'\\)\\)\")",
+      "Bash(npm uninstall *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('exports',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('types:', d.get\\('types'\\)\\); print\\('typings:', d.get\\('typings'\\)\\)\")",
+      "Bash(npm view *)",
+      "Bash(python3 -c \"import json,sys; vs=json.load\\(sys.stdin\\); print\\('\\\\n'.join\\(v for v in vs if v.startswith\\('14.'\\)\\)\\)\")",
+      "Bash(npm pack *)",
+      "Bash(xargs curl *)",
+      "Bash(tar -tz)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d['version']\\)\")",
+      "Bash(git fetch *)",
+      "Bash(git push *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}, indent=2\\)\\)\")",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(xargs cat *)",
+      "Bash(xargs ls *)",
+      "Bash(gh pr *)",
+      "Bash(xxd)"
+    ],
+    "additionalDirectories": [
+      "/home/jairo/Desktop/learning/MiBanquito"
+    ]
+  }
+}

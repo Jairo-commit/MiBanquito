@@ -11,18 +11,22 @@ import {
 import { AccountCircle } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "~/hooks/useCurrentUser";
+import { ProfileModal } from "~/components/ProfileModal/profileModal";
 import { appBarSx, navEndSx } from "./navbar.sx";
 
 export function Navbar() {
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => setAnchorEl(null);
+  const handleProfile = () => { handleClose(); setProfileOpen(true); };
+  const handleLogout = () => { handleClose(); navigate("/logout"); };
 
   return (
     <AppBar position="static" sx={appBarSx}>
@@ -60,17 +64,21 @@ export function Navbar() {
               >
                 <MenuItem
                   data-testid="navbar-profile-item"
-                  onClick={handleClose}
+                  onClick={handleProfile}
                 >
                   Profile
                 </MenuItem>
                 <MenuItem
                   data-testid="navbar-logout-item"
-                  onClick={handleClose}
+                  onClick={handleLogout}
                 >
                   Logout
                 </MenuItem>
               </Menu>
+              <ProfileModal
+                open={profileOpen}
+                onClose={() => setProfileOpen(false)}
+              />
             </>
           )}
         </Box>

@@ -3,6 +3,8 @@ import { type SxProps, type Theme } from "@mui/material/styles";
 export const containerSx: SxProps<Theme> = {
     display: "flex",
     minHeight: "calc(100vh - 64px)",
+    padding: "10px",
+    gap: "10px",
 };
 
 export const leftPanelSx = (leftWidth: number): SxProps<Theme> => ({
