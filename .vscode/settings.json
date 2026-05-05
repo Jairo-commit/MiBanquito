@@ -3,5 +3,6 @@
   "flake8.cwd": "${workspaceFolder}/backend",
   "python.analysis.extraPaths": [
   "backend"
-  ]
+  ],
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

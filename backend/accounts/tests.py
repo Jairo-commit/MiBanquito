@@ -63,6 +63,16 @@ class TestCreateSavingsAccount:
         account = SavingsAccount.objects.get(id=response.data["id"])
         assert account.user == user
 
+    def test_user_cannot_create_account_for_another_user(self, authenticated_client):
+        client, user = authenticated_client
+        other_user = UserFactory()
+        response = client.post(ACCOUNTS_URL, {**VALID_ACCOUNT_PAYLOAD, "user": other_user.id})
+
+        assert response.status_code == 201
+        account = SavingsAccount.objects.get(id=response.data["id"])
+        assert account.user == user
+        assert account.user != other_user
+
     def test_account_number_not_writable(self, authenticated_client):
         client, _ = authenticated_client
         payload = {**VALID_ACCOUNT_PAYLOAD, "account_number": "MB9999999999"}

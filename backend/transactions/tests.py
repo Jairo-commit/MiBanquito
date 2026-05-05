@@ -257,17 +257,89 @@ class TestRetrieveTransaction:
 
         assert response.status_code == 200
 
-    def test_authenticated_user_can_retrieve_transaction(self, authenticated_client, account, second_account):
-        client, _ = authenticated_client
-        txn = Transaction.objects.create_internal_transaction(
+
+    def test_authenticated_user_can_only_retrieve_own_transactions(self, authenticated_client, account, second_account):
+        client, user = authenticated_client
+
+        # Transaction where user is source — should be visible
+        txn_as_source = Transaction.objects.create_internal_transaction(
             source_account=account,
             destination_account=second_account,
             amount=Decimal("100000"),
         )
-        response = client.get(transaction_detail_url(txn.id))
+
+        # Transaction where user is destination — should be visible
+        txn_as_destination = Transaction.objects.create_internal_transaction(
+            source_account=second_account,
+            destination_account=account,
+            amount=Decimal("50000"),
+        )
+
+        # Transaction between two unrelated accounts — should NOT be visible
+        third_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        fourth_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        unrelated_txn = Transaction.objects.create_internal_transaction(
+            source_account=third_account,
+            destination_account=fourth_account,
+            amount=Decimal("200000"),
+        )
+
+        # User can retrieve their own transactions
+        response_source = client.get(transaction_detail_url(txn_as_source.id))
+        assert response_source.status_code == 200
+        assert str(response_source.data["id"]) == str(txn_as_source.id)
+
+        response_destination = client.get(transaction_detail_url(txn_as_destination.id))
+        assert response_destination.status_code == 200
+        assert str(response_destination.data["id"]) == str(txn_as_destination.id)
+
+        # User cannot retrieve unrelated transaction
+        response_unrelated = client.get(transaction_detail_url(unrelated_txn.id))
+        assert response_unrelated.status_code == 404
+    
+    def test_authenticated_user_can_only_list_own_transactions(self, authenticated_client, account, second_account):
+        client, user = authenticated_client
+
+        # Transaction where user is source — should be visible
+        Transaction.objects.create_internal_transaction(
+            source_account=account,
+            destination_account=second_account,
+            amount=Decimal("100000"),
+        )
+
+        # Transaction where user is destination — should be visible
+        Transaction.objects.create_internal_transaction(
+            source_account=second_account,
+            destination_account=account,
+            amount=Decimal("50000"),
+        )
+
+        # Transactions between unrelated accounts — should NOT be visible
+        third_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        fourth_account = SavingsAccount.objects.create_account(
+            user=UserFactory(), balance=Decimal("500000")
+        )
+        Transaction.objects.create_internal_transaction(
+            source_account=third_account,
+            destination_account=fourth_account,
+            amount=Decimal("200000"),
+        )
+        Transaction.objects.create_internal_transaction(
+            source_account=fourth_account,
+            destination_account=third_account,
+            amount=Decimal("100000"),
+        )
+
+        response = client.get(TRANSACTIONS_URL)
 
         assert response.status_code == 200
-        assert str(response.data["id"]) == str(txn.id)
+        assert response.data["count"] == 2  # Only the 2 transactions involving the user
 
     def test_response_contains_expected_fields(self, authenticated_client, account, second_account):
         client, _ = authenticated_client
@@ -311,7 +383,7 @@ class TestTransactionImmutability:
         )
         response = client.delete(transaction_detail_url(txn.id))
 
-        assert response.status_code == 204
+        assert response.status_code == 403
 
 
 @pytest.mark.django_db
@@ -376,4 +448,4 @@ class TestTransactionSourceOwnership:
         }
         response = client.post(TRANSACTIONS_URL, payload)
 
-        assert response.status_code == 201
+        assert response.status_code == 403

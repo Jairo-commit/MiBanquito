@@ -17,3 +17,19 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Transaction.objects.filter(
             Q(source_account__user=user) | Q(destination_account__user=user)
         ).distinct()
+    
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        source_account = serializer.validated_data.get("source_account")
+
+        if source_account and source_account.user != user:
+            raise PermissionDenied(
+                "You do not have permission to transfer from this account."
+            )
+
+        serializer.save()
+
+
+    def destroy(self, request, *args, **kwargs):
+        raise PermissionDenied("Transactions cannot be deleted.")
