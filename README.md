@@ -92,6 +92,50 @@ docker compose ps
 
 ---
 
+## Backend Summary
+
+The backend is a **Django REST Framework** API running on Python 3.14 with a PostgreSQL 18 database. All secrets are loaded from `backend/.env` via `django-environ`.
+
+### Authentication
+
+JWT-based auth via `djangorestframework-simplejwt`. Access tokens expire in **30 minutes**; refresh tokens last **1 day**. All API endpoints require authentication by default (`IsAuthenticated`).
+
+| Endpoint | Description |
+| :--- | :--- |
+| `POST /api/user/register/` | Create a new user account |
+| `GET /api/user/me/` | Retrieve the authenticated user's profile |
+| `POST /api/token/` | Obtain access + refresh token pair |
+| `POST /api/token/refresh/` | Refresh an expired access token |
+
+### Apps & Data Models
+
+**`users`** — Custom `User` model extending `AbstractUser` with Colombian ID fields (`document_type`, `document_number`), phone, and city.
+
+**`accounts`** — `SavingsAccount` with an auto-generated `MB…` account number, decimal balance, and active flag. Exposes `/api/accounts/` as a full ModelViewSet (list, create, retrieve, update, destroy). Key rules:
+- Opening balance minimum: **$100,000**.
+- `account_number`, `user`, and `created_at` are read-only; the number is generated automatically on creation.
+- Superusers see all accounts; regular users see only their own.
+
+**`transactions`** — `Transaction` (UUID PK, UUID reference, INTERNAL/EXTERNAL type, PENDING/COMPLETED/FAILED status). Exposes `/api/transactions/` as a ModelViewSet. Key rules:
+- **INTERNAL** — transfers between two savings accounts within the platform. Requires `source_account`, `destination_account` (or `to_account_number`), and `amount`. Balances are updated atomically using `SELECT FOR UPDATE` to prevent race conditions.
+- **EXTERNAL** — withdrawals to outside the platform. Requires only `source_account` and `amount`; no destination account is stored.
+- Both types validate: minimum amount ($0.01), active accounts, sufficient funds, and (for internal) that source ≠ destination.
+- `status` and `reference` are read-only; a failed atomic block records the transaction as `FAILED` before re-raising.
+- Transactions cannot be deleted (returns `403`). Users only see transactions where they are the source or destination account holder; superusers see all.
+
+**`products`** — Two financial product models:
+- `LoanRequest` — UUID PK, amount, term in months, monthly rate, PENDING/APPROVED/REJECTED status, reviewed by superuser. Exposes `/api/products/loans/`.
+- `CDT` (Certificate of Deposit) — UUID PK, amount, term in days, annual rate, maturity date, ACTIVE/MATURED status. Exposes `/api/products/cdts/`.
+
+### Key Configuration
+
+- **Pagination**: `PageNumberPagination` at 20 items per page.
+- **CORS**: All origins allowed with credentials (development setting).
+- **Admin panel**: Superusers can review and approve/reject loan requests at `/admin/`.
+- **Code style**: `black` formatter enforced.
+
+---
+
 ## 🧪 Running Tests
 
 ### Backend (pytest)
