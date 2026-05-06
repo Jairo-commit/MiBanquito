@@ -1,6 +1,13 @@
 from decimal import Decimal
 from django.db import models, transaction
-
+from transactions.helpers import (
+            validate_transaction_amount,
+            validate_source_account_active,
+            validate_destination_account_active,
+            validate_sufficient_funds,
+            validate_different_accounts,
+        )
+from accounts.models import SavingsAccount
 
 class TransactionManager(models.Manager):
 
@@ -12,14 +19,7 @@ class TransactionManager(models.Manager):
         description: str = "",
     ):
 
-        from transactions.helpers import (
-            validate_transaction_amount,
-            validate_source_account_active,
-            validate_destination_account_active,
-            validate_sufficient_funds,
-            validate_different_accounts,
-        )
-        from accounts.models import SavingsAccount
+        
 
         validate_transaction_amount(amount)
         validate_different_accounts(source_account, destination_account)
@@ -73,13 +73,6 @@ class TransactionManager(models.Manager):
         amount: Decimal,
         description: str = "",
     ):
-        
-        from transactions.helpers import (
-            validate_transaction_amount,
-            validate_source_account_active,
-            validate_sufficient_funds,
-        )
-        from accounts.models import SavingsAccount
 
         validate_transaction_amount(amount)
         validate_source_account_active(source_account)
