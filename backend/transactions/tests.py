@@ -259,7 +259,7 @@ class TestRetrieveTransaction:
 
 
     def test_authenticated_user_can_only_retrieve_own_transactions(self, authenticated_client, account, second_account):
-        client, user = authenticated_client
+        client, _ = authenticated_client
 
         # Transaction where user is source — should be visible
         txn_as_source = Transaction.objects.create_internal_transaction(
@@ -302,7 +302,7 @@ class TestRetrieveTransaction:
         assert response_unrelated.status_code == 404
     
     def test_authenticated_user_can_only_list_own_transactions(self, authenticated_client, account, second_account):
-        client, user = authenticated_client
+        client, _ = authenticated_client
 
         # Transaction where user is source — should be visible
         Transaction.objects.create_internal_transaction(
