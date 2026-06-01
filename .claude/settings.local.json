@@ -34,7 +34,10 @@
       "Bash(xargs cat *)",
       "Bash(xargs ls *)",
       "Bash(gh pr *)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(which node *)",
+      "Bash(node -v)",
+      "Bash(git stash *)"
     ],
     "additionalDirectories": [
       "/home/jairo/Desktop/learning/MiBanquito"

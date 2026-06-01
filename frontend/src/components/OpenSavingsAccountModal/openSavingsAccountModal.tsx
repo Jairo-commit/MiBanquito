@@ -16,7 +16,7 @@ interface OpenSavingsAccountModalProps {
 }
 
 const defaultValues: OpenSavingsAccountFormValues = {
-  balance: 0,
+  balance: null,
 };
 
 export function OpenSavingsAccountModal({ open, onClose }: OpenSavingsAccountModalProps) {

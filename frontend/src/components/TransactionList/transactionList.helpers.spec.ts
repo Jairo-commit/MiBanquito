@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { formatAmount, formatDate } from "./transactionList.helpers";
+import { transactionFactory } from "~/test/factories/transactionFactory";
+import {
+  formatAmount,
+  formatDate,
+  getTransactionParties,
+} from "./transactionList.helpers";
 
 const fmtAmount = (n: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -29,5 +34,43 @@ describe("formatDate", () => {
   it("formats a valid ISO date string", () => {
     const isoDate = new Date(2025, 0, 15).toISOString();
     expect(formatDate(isoDate)).toBe(fmtDate(new Date(isoDate)));
+  });
+});
+
+describe("getTransactionParties", () => {
+  it("returns holder names for a superuser", () => {
+    const tx = transactionFactory.build({
+      source_account_holder: "John Doe",
+      destination_account_holder: "Jane Smith",
+    });
+
+    expect(getTransactionParties(tx, true)).toEqual({
+      source: "John Doe",
+      destination: "Jane Smith",
+    });
+  });
+
+  it("returns account numbers for a regular user", () => {
+    const tx = transactionFactory.build({
+      source_account_number: "MB-SRC-0001-2025",
+      destination_account_number: "MB-DST-0001-2025",
+    });
+
+    expect(getTransactionParties(tx, false)).toEqual({
+      source: "MB-SRC-0001-2025",
+      destination: "MB-DST-0001-2025",
+    });
+  });
+
+  it("falls back to a dash when a value is null", () => {
+    const tx = transactionFactory.build({
+      source_account_holder: null,
+      destination_account_holder: null,
+    });
+
+    expect(getTransactionParties(tx, true)).toEqual({
+      source: "—",
+      destination: "—",
+    });
   });
 });

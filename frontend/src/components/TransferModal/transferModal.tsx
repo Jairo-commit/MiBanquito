@@ -17,7 +17,7 @@ interface TransferModalProps {
 
 const defaultValues: TransferFormValues = {
   to_account_number: "",
-  amount: 0,
+  amount: null,
   description: "",
 };
 

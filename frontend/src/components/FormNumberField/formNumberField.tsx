@@ -3,10 +3,10 @@ import { getFieldError } from "~/utils/getFieldError";
 
 interface NumberField {
     state: {
-        value: number | undefined;
+        value: number | null | undefined;
         meta: { errors: unknown[] };
     };
-    handleChange: (value: number) => void;
+    handleChange: (value: number | null) => void;
     handleBlur: () => void;
 }
 
@@ -28,7 +28,7 @@ export function FormNumberField({ field, label, min, step, testId }: FormNumberF
             value={field.state.value ?? ""}
             onChange={(e) => {
                 const n = (e.target as HTMLInputElement).valueAsNumber;
-                field.handleChange(isNaN(n) ? 0 : n);
+                field.handleChange(isNaN(n) ? null : n);
             }}
             onBlur={field.handleBlur}
             error={!!error}
