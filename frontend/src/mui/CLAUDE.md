@@ -1,33 +1,33 @@
-# CustomTheme — Guía de referencia
+# CustomTheme — Reference guide
 
-El tema vive en `customTheme.tsx` y es la **única fuente de verdad** para colores, gradientes y tipografía. No se deben redefinir estos valores en archivos `*.sx.ts` ni en props `sx` inline.
+The theme lives in `customTheme.tsx` and is the **single source of truth** for colors, gradients and typography. Never redefine these values in `*.sx.ts` files or in inline `sx` props.
 
 ## Typography variants
 
-Cuando uses un componente `<Typography>`, usa siempre el prop `variant` con el token correspondiente. Nunca definas `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing` ni colores dentro de un `sx`.
+When you use a `<Typography>` component, always use the `variant` prop with the matching token. Never set `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing` or colors inside an `sx`.
 
-| Variant | Escenario |
+| Variant | Scenario |
 |---|---|
-| `accountBalance` | Saldo principal de una cuenta. Fuente grande (3 rem, bold), texto con gradiente de marca. |
-| `accountNumber` | Número de cuenta (p. ej. `MB-0001-2025`). Fuente pequeña (0.875 rem), tracking amplio, color `secondary.main`. |
+| `accountBalance` | An account's main balance. Large font (3 rem, bold), text with the brand gradient. |
+| `accountNumber` | Account number (e.g. `MB-0001-2025`). Small font (0.875 rem), wide tracking, `secondary.main` color. |
 
-> **Regla:** si necesitas un nuevo estilo tipográfico recurrente, agrégalo aquí como variante y documéntalo en esta tabla. No crees el estilo directamente en el componente.
+> **Rule:** if you need a new recurring typographic style, add it here as a variant (including the `TypographyPropsVariantOverrides` module augmentation in `customTheme.tsx`) and document it in this table. Do not create the style directly in the component.
 
 ## Palette tokens
 
-| Token | Valor | Uso |
+| Token | Value | Use |
 |---|---|---|
-| `gradients.brand` | `linear-gradient(135deg, #0BC2F7, #7B61FF)` | Fondos de botones y elementos de marca. |
-| `gradients.brandHover` | `linear-gradient(135deg, #09aedd, #6a52e0)` | Estado hover de botones de marca. |
-| `gradients.brandText` | `linear-gradient(135deg, #0BC2F7, #7B61FF)` | Texto con gradiente (via `background-clip: text`). Ya aplicado en el variant `accountBalance`. |
-| `background.default` | `#E9EBF9` | Fondo general de la app. |
-| `background.paper` | `#FFFFFF` | Tarjetas y superficies elevadas. |
-| `primary.main` | `#0BC2F7` | Color principal (cian). |
-| `primary.contrastText` | `#FFFFFF` | Texto sobre fondos primarios. |
-| `primary.light` | `#E5F6FF` | Fondos sutiles primarios. |
-| `secondary.main` | `#7B61FF` | Color secundario (violeta). |
-| `secondary.contrastText` | `#FFFFFF` | Texto sobre fondos secundarios. |
-| `secondary.light` | `#EDE9FF` | Fondos sutiles secundarios. |
-| `error.main` | `#FB5859` | Errores y alertas. |
-| `success.main` | `#22C55E` | Confirmaciones y éxito. |
-| `warning.main` | `#F59E0B` | Advertencias. |
+| `gradients.brand` | `linear-gradient(135deg, #0BC2F7, #7B61FF)` | Backgrounds of buttons and brand elements. |
+| `gradients.brandHover` | `linear-gradient(135deg, #09aedd, #6a52e0)` | Hover state of brand buttons. |
+| `gradients.brandText` | `linear-gradient(135deg, #0BC2F7, #7B61FF)` | Gradient text (via `background-clip: text`). Already applied in the `accountBalance` variant. |
+| `background.default` | `#E9EBF9` | App background. |
+| `background.paper` | `#FFFFFF` | Cards and elevated surfaces. |
+| `primary.main` | `#0BC2F7` | Main color (cyan). |
+| `primary.contrastText` | `#FFFFFF` | Text on primary backgrounds. |
+| `primary.light` | `#E5F6FF` | Subtle primary backgrounds. |
+| `secondary.main` | `#7B61FF` | Secondary color (violet). |
+| `secondary.contrastText` | `#FFFFFF` | Text on secondary backgrounds. |
+| `secondary.light` | `#EDE9FF` | Subtle secondary backgrounds. |
+| `error.main` | `#FB5859` | Errors and alerts. |
+| `success.main` | `#22C55E` | Confirmations and success. |
+| `warning.main` | `#F59E0B` | Warnings. |

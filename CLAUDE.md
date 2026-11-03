@@ -53,6 +53,10 @@ Django admin at `http://localhost:8000/admin/`.
 
 **Component file rule**: Each component must live in its own file. Two or more components must never share a single `.tsx` file. If a helper component is needed inside a feature, extract it to `src/components/` following the folder conventions in `src/components/CLAUDE.md`.
 
+### Rules
+
+Coding conventions live in `.claude/rules/backend/` and `.claude/rules/frontend/`, scoped by path.
+
 ### Backend (`backend/`)
 
 **Settings**: `core/settings.py` reads all secrets and config from a `.env` file via `django-environ`.
@@ -61,10 +65,9 @@ Django admin at `http://localhost:8000/admin/`.
 
 **Apps**:
 - `users` — Custom `User` model (extends `AbstractUser`) with Colombian ID fields (document_type, document_number), phone, city. `AUTH_USER_MODEL = "users.User"`.
-- `accounts` — `SavingsAccount` (UUID PK, auto-generated account number `MB…`) and `AccountMovement` (immutable audit trail: DEPOSIT, WITHDRAWAL, TRANSFER_IN, TRANSFER_OUT).
-- `transactions` — `Transaction` model (INTERNAL/EXTERNAL types, PENDING/COMPLETED/FAILED status, UUID reference).
+- `accounts` — `SavingsAccount` (auto-generated account number `MB` + 10 digits, minimum opening balance enforced in `accounts/helpers.py`).
+- `transactions` — `Transaction` model (UUID PK, INTERNAL/EXTERNAL types, PENDING/COMPLETED/FAILED status, UUID reference). Immutable audit trail of every transfer attempt.
 - `products` — `LoanRequest` (PENDING/APPROVED/REJECTED) and `CDT` (ACTIVE/MATURED, term_days, annual_rate, maturity_date).
-- `landing` — `ContactMessage` for the public contact form.
 - `core` — Settings, URL config, WSGI/ASGI.
 
 **DRF config**: Default permission is `IsAuthenticated`. JWT access token lifetime is 30 minutes; refresh is 1 day. Pagination is `PageNumberPagination` at 20 items/page. CORS allows all origins with credentials (development setting).

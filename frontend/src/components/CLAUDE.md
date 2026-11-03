@@ -1,24 +1,26 @@
-# Componentes — Convenciones
+# Components — Conventions
 
-## Estructura de carpetas
+## Folder structure
 
-Cada componente vive en su propia carpeta con el nombre en PascalCase. Los archivos dentro usan camelCase:
+Each component lives in its own PascalCase folder. The files inside use camelCase:
 
 ```
 src/components/
 ├── MyComponent/
-│   ├── myComponent.tsx          — lógica y JSX
-│   ├── myComponent.sx.ts        — estilos SX (si los hay)
-│   ├── myComponent.helpers.ts   — funciones puras (si las hay)
-│   └── myComponent.helpers.spec.ts — tests unitarios de helpers
-└── protectedRoute.tsx           — excepción: componentes de una sola responsabilidad sin estilos propios
+│   ├── myComponent.tsx              — logic and JSX
+│   ├── myComponent.sx.ts            — SX styles (if any)
+│   ├── myComponent.helpers.ts       — pure functions (if any)
+│   ├── myComponent.helpers.spec.ts  — unit tests for the helpers
+│   ├── myComponentSchema.ts         — Zod schema and form value types (if it has a form)
+│   └── myComponent.spec.tsx         — component tests
+└── protectedRoute.tsx               — exception: single-purpose component with no styles of its own
 ```
 
-## Estilos SX
+## SX styles
 
-Los estilos SX van siempre en un archivo separado `*.sx.ts` en la misma carpeta. Nunca escribir objetos SX inline en el JSX.
+SX styles always go in a separate `*.sx.ts` file in the same folder. Never write SX objects inline in the JSX.
 
-**Tipo base:**
+**Base type:**
 
 ```ts
 import { type SxProps, type Theme } from "@mui/material/styles";
@@ -26,7 +28,7 @@ import { type SxProps, type Theme } from "@mui/material/styles";
 export const mySx: SxProps<Theme> = { ... };
 ```
 
-**Cuando el estilo depende del tema** (colores, gradientes, spacing), usar el callback:
+**When the style depends on the theme** (colors, gradients, spacing), use the callback:
 
 ```ts
 export const mySx: SxProps<Theme> = (theme) => ({
@@ -36,39 +38,40 @@ export const mySx: SxProps<Theme> = (theme) => ({
 });
 ```
 
-## Colores y tipografía
+## Colors and typography
 
-**Regla absoluta:** todos los valores de color, gradiente y fuente deben venir del `customTheme`. Nunca usar valores hardcodeados (p. ej. `"#0BC2F7"`, `"white"`, `"700"`). Nunca redefinir en un `*.sx.ts` propiedades que ya están en el tema.
+**Absolute rule:** every color, gradient and font value must come from `customTheme`. Never use hard-coded values (e.g. `"#0BC2F7"`, `"white"`, `"700"`). Never redefine in a `*.sx.ts` a property the theme already sets.
 
-| Necesidad | Token del tema |
-|-----------|---------------|
-| Gradiente de marca | `theme.palette.gradients.brand` |
-| Gradiente hover | `theme.palette.gradients.brandHover` |
-| Color primario | `theme.palette.primary.main` |
-| Color secundario | `theme.palette.secondary.main` |
-| Texto sobre primario | `theme.palette.primary.contrastText` |
-| Fondo de tarjeta | `theme.palette.background.paper` |
-| Fondo general | `theme.palette.background.default` |
-| Sombra suave | `alpha(theme.palette.primary.main, 0.3)` (importar `alpha` de `@mui/material/styles`) |
+| Need | Theme token |
+|------|-------------|
+| Brand gradient | `theme.palette.gradients.brand` |
+| Hover gradient | `theme.palette.gradients.brandHover` |
+| Gradient text | `theme.palette.gradients.brandText` |
+| Primary color | `theme.palette.primary.main` |
+| Secondary color | `theme.palette.secondary.main` |
+| Text on primary | `theme.palette.primary.contrastText` |
+| Card background | `theme.palette.background.paper` |
+| App background | `theme.palette.background.default` |
+| Soft shadow | `alpha(theme.palette.primary.main, 0.3)` (import `alpha` from `@mui/material/styles`) |
 
-## Typography — uso de variants
+## Typography — using variants
 
-Cuando uses `<Typography>`, el estilo tipográfico (fuente, peso, tamaño, color, gradiente) va **siempre** en el prop `variant`, nunca en `sx`. El único uso permitido de `sx` sobre `<Typography>` es para **espaciado y layout** (p. ej. `mt`, `mb`, `display`).
+When you use `<Typography>`, the typographic style (font, weight, size, color, gradient) **always** goes in the `variant` prop, never in `sx`. The only allowed use of `sx` on `<Typography>` is **spacing and layout** (e.g. `mt`, `mb`, `display`).
 
 ```tsx
-// Correcto
+// Correct
 <Typography variant="accountBalance">COP 1.200.000</Typography>
 <Typography variant="accountNumber" sx={{ mt: 1 }}>MB-0001-2025</Typography>
 
-// Incorrecto — no redefinir tipografía en sx
+// Incorrect — do not redefine typography in sx
 <Typography sx={{ fontSize: "3rem", fontWeight: 700 }}>COP 1.200.000</Typography>
 ```
 
-Si necesitas un nuevo estilo tipográfico que se repita en varios lugares, agrégalo como variante en `customTheme.tsx` y documéntalo en `src/mui/CLAUDE.md`. Consulta esa guía para ver las variantes disponibles.
+If you need a new typographic style that repeats in several places, add it as a variant in `customTheme.tsx` and document it in `src/mui/CLAUDE.md`. Check that guide for the available variants.
 
-## Estado local de UI
+## Local UI state
 
-El estado de apertura de menús, modales y tooltips (`anchorEl`, `open`) vive en el propio componente con `useState`. No sube al store global.
+The open state of menus, modals and tooltips (`anchorEl`, `open`) lives in the component itself with `useState`. It never moves up to global state.
 
 ```ts
 const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -76,9 +79,9 @@ const handleOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTa
 const handleClose = () => setAnchorEl(null);
 ```
 
-## Funciones puras (helpers)
+## Pure functions (helpers)
 
-Cualquier función pura que derive un valor a partir de datos (formateo, cálculos, transformaciones) va en un archivo `*.helpers.ts` separado dentro de la carpeta del componente. Nunca definir estas funciones inline en el `.tsx`.
+Any pure function that derives a value from data (formatting, calculations, transformations) goes in a separate `*.helpers.ts` file inside the component's folder. Never define these functions inline in the `.tsx`.
 
 ```ts
 // accountPanel.helpers.ts
@@ -90,26 +93,33 @@ export const formatBalance = (balance: string): string =>
   }).format(Number(balance));
 ```
 
-Cada archivo `*.helpers.ts` debe tener su `*.helpers.spec.ts` con tests unitarios que cubran los casos relevantes (valor normal, cero, borde):
+Every `*.helpers.ts` file must have its `*.helpers.spec.ts` with unit tests covering the relevant cases (normal value, zero, edge). Build the expected currency string with the same `Intl.NumberFormat` instead of hard-coding it, because the formatter emits a non-breaking space:
 
 ```ts
 // accountPanel.helpers.spec.ts
 import { describe, it, expect } from "vitest";
 import { formatBalance } from "./accountPanel.helpers";
 
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0,
+  }).format(n);
+
 describe("formatBalance", () => {
   it("formats a positive balance", () => {
-    expect(formatBalance("1000000.00")).toBe("$ 1.000.000");
+    expect(formatBalance("1000000.00")).toBe(fmt(1000000));
   });
   it("formats zero", () => {
-    expect(formatBalance("0")).toBe("$ 0");
+    expect(formatBalance("0")).toBe(fmt(0));
   });
 });
 ```
 
-## Formularios en modales
+## Forms in modals
 
-Cuando un modal contiene un formulario (TanStack Form), nunca usar `useEffect` para hacer `form.reset()` al cerrar. En su lugar, envolver `onClose` en un `handleClose` local que resetea primero:
+When a modal contains a form (TanStack Form), never use `useEffect` to call `form.reset()` on close. Instead, wrap `onClose` in a local `handleClose` that resets first:
 
 ```tsx
 const handleClose = () => {
@@ -118,15 +128,15 @@ const handleClose = () => {
 };
 ```
 
-Usar `handleClose` en todos los puntos de cierre:
-- `<Modal onClose={handleClose}>` — cubre cierre por backdrop/ESC
-- `{ onSuccess: handleClose }` en la mutación — cubre cierre tras éxito
+Use `handleClose` at every exit point:
+- `<Modal onClose={handleClose}>` — covers closing via backdrop/ESC
+- `{ onSuccess: handleClose }` on the mutation — covers closing after success
 
-Esto hace el reset explícito y directo en lugar de un efecto secundario reactivo.
+This makes the reset explicit and direct instead of a reactive side effect.
 
-## Iconos
+## Icons
 
-Usar `@mui/icons-material`. Importar solo el icono necesario (tree-shakeable):
+Use `@mui/icons-material`. Import only the icon you need (tree-shakeable):
 
 ```ts
 import { AccountCircle } from "@mui/icons-material";

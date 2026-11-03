@@ -1,6 +1,6 @@
 # Testing patterns — users app
 
-Tests live in `users/tests.py` and cover the public registration and login endpoints.
+Tests live in `users/tests.py` and cover registration, login and the current-user endpoint. General conventions are in `.claude/rules/backend/testing.md`.
 
 ## Key conventions
 
@@ -11,7 +11,7 @@ class TestSomeEndpoint:
     def test_something(self, api_client): ...
 ```
 
-**Fixtures** — define locally in `tests.py`; only `api_client` is needed for public endpoints:
+**Fixtures** — define locally in `tests.py`; only `api_client` is needed; authenticated tests call `api_client.force_authenticate(user=UserFactory())` inline:
 ```python
 @pytest.fixture
 def api_client():
@@ -37,6 +37,8 @@ def test_invalid_payload_returns_400(self, api_client, override):
     assert api_client.post(URL, payload).status_code == 400
 ```
 
+**URLs** — module-level constants built with `reverse()`: `REGISTER_URL`, `LOGIN_URL`, `ME_URL`.
+
 **Payloads** — plain `dict`; DRF's test client handles content-type automatically.
 
 **Assertions** — check `response.status_code` first, then `response.data` keys/values. Never assert on raw `response.content`.
@@ -47,3 +49,4 @@ def test_invalid_payload_returns_400(self, api_client, override):
 |----------|--------|---------------|
 | `/api/user/register/` | POST | No |
 | `/api/token/` | POST | No |
+| `/api/user/me/` | GET | Yes |

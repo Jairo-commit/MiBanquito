@@ -1,36 +1,40 @@
-# Testing — Técnicas y convenciones
+# Testing — Techniques and conventions
 
 ## Stack
 
-- **Vitest** — runner nativo de Vite; config en `vitest.config.ts` (raíz del frontend)
-- **@testing-library/react** — render e interacción con componentes React
-- **@testing-library/user-event** — simula eventos reales del usuario (pointer, teclado)
-- **@testing-library/jest-dom** — matchers extra para el DOM (`toBeInTheDocument`, `toBeDisabled`, etc.)
-- **MSW v2** — intercepta peticiones HTTP de Axios a nivel de red (`msw/node`)
+- **Vitest** — Vite's native runner; config in `vitest.config.ts` (frontend root)
+- **@testing-library/react** — rendering and interacting with React components
+- **@testing-library/user-event** — simulates real user events (pointer, keyboard)
+- **@testing-library/jest-dom** — extra DOM matchers (`toBeInTheDocument`, `toBeDisabled`, etc.)
+- **MSW v2** — intercepts Axios HTTP requests at the network level (`msw/node`)
 
-## Estructura de carpetas
+## Folder structure
 
 ```
 src/test/
-├── setup.ts               — configuración global de todos los tests
-├── testUtils.tsx          — render con providers y re-exports de utilidades
-├── factories/             — constructores de datos de prueba tipados
+├── setup.ts               — global configuration for all tests
+├── testUtils.tsx          — render with providers and re-exported utilities
+├── factories/             — typed test data builders
+│   ├── accountFactory.ts
 │   ├── authTokenFactory.ts
+│   ├── cdtFactory.ts
+│   ├── loanRequestFactory.ts
+│   ├── transactionFactory.ts
 │   └── userResponseFactory.ts
 └── mocks/
-    ├── handlers.ts        — handlers MSW happy-path (usan factories)
-    └── server.ts          — instancia del servidor MSW
+    ├── handlers.ts        — happy-path MSW handlers (use the factories)
+    └── server.ts          — MSW server instance
 ```
 
-Los archivos de test viven junto al código que testean (co-located) y usan la extensión `.spec.tsx`. No usar subdirectorios `__tests__/`.
+Test files live next to the code they test (co-located) and use the `.spec.tsx` extension (`.spec.ts` for helpers). Do not use `__tests__/` subdirectories.
 
-## Providers de test (`testUtils.tsx`)
+## Test providers (`testUtils.tsx`)
 
-Cada test recibe un `QueryClient` **nuevo** para evitar que la caché de React Query filtre estado entre tests. El wrapper incluye:
+Each test gets a **new** `QueryClient` so React Query's cache never leaks state between tests. The wrapper includes:
 
-1. `QueryClientProvider` con `retry: false` en queries y mutations
-2. `MemoryRouter` — reemplaza `BrowserRouter`; acepta `initialEntries` por opción
-3. `CustomTheme` — necesario porque MUI lanza error sin `ThemeProvider`
+1. `QueryClientProvider` with `retry: false` on queries and mutations
+2. `MemoryRouter` — replaces `BrowserRouter`; accepts `initialEntries` as an option
+3. `CustomTheme` — required because MUI throws without a `ThemeProvider`
 
 ```tsx
 renderWithProviders(<Login />, { routerProps: { initialEntries: ["/login"] } });
@@ -38,18 +42,18 @@ renderWithProviders(<Login />, { routerProps: { initialEntries: ["/login"] } });
 
 ## Factories
 
-Las factories crean objetos tipados con valores por defecto sobreescribibles. Útil para reusar en handlers MSW y en aserciones de tests individuales.
+Factories (built with `factory.ts`) create typed objects with overridable defaults. Reuse them in MSW handlers and in individual test assertions.
 
 ```ts
-authTokenFactory({ access: "custom-token" })   // solo sobreescribe lo que importa
-userResponseFactory({ username: "jairo" })
+authTokenFactory.build({ access: "custom-token" })   // override only what matters
+userResponseFactory.build({ username: "jairo" })
 ```
 
-El tipo de retorno es siempre el modelo de producción (`AuthToken`, `UserResponse`), por lo que TypeScript detecta campos incorrectos.
+The return type is always the production model (`AuthToken`, `UserResponse`, `SavingsAccount`…), so TypeScript catches wrong fields.
 
-## MSW — mocks de red
+## MSW — network mocks
 
-Los handlers en `handlers.ts` cubren el happy-path. Para errores o casos especiales, se sobreescribe el handler **dentro del test** con `server.use(...)`. El `afterEach` del setup llama a `server.resetHandlers()` para que el override no afecte otros tests.
+The handlers in `handlers.ts` cover the happy path. For errors or special cases, override the handler **inside the test** with `server.use(...)`. The `afterEach` in setup calls `server.resetHandlers()` so the override does not affect other tests.
 
 ```ts
 server.use(
@@ -59,11 +63,11 @@ server.use(
 );
 ```
 
-`onUnhandledRequest: "error"` hace fallar el test si Axios hace una petición sin handler, evitando falsos positivos silenciosos.
+`onUnhandledRequest: "error"` fails the test if Axios makes a request with no handler, preventing silent false positives.
 
-## Mock de `useNavigate`
+## Mocking `useNavigate`
 
-`vi.mock` se eleva antes que los imports, así que la variable del mock debe crearse con `vi.hoisted()`:
+`vi.mock` is hoisted above the imports, so the mock variable must be created with `vi.hoisted()`:
 
 ```ts
 const mockNavigate = vi.hoisted(() => vi.fn());
@@ -74,22 +78,22 @@ vi.mock("react-router-dom", async (importOriginal) => {
 });
 ```
 
-Se limpia en `afterEach` con `mockNavigate.mockClear()`.
+Clear it in `afterEach` with `mockNavigate.mockClear()`.
 
-## Aserciones asíncronas
+## Async assertions
 
-Las mutaciones de React Query son asíncronas. Siempre usar `waitFor` para esperar que el DOM se actualice tras un submit:
+React Query mutations are asynchronous. Always use `waitFor` to wait for the DOM to update after a submit:
 
 ```ts
-await user.click(screen.getByRole("button", { name: /sign in/i }));
+await user.click(screen.getByTestId("login-submit"));
 await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"));
 ```
 
-Nunca afirmar síncronamente después de una acción que dispara una mutación.
+Never assert synchronously after an action that triggers a mutation.
 
 ## Cleanup
 
-Con `globals: false` en Vitest, RTL no detecta el `afterEach` global y no limpia el DOM automáticamente. Se llama `cleanup()` explícitamente en `setup.ts`:
+With `globals: false` in Vitest, RTL does not detect the global `afterEach` and does not clean up the DOM automatically. `cleanup()` is called explicitly in `setup.ts`:
 
 ```ts
 afterEach(() => {
@@ -98,65 +102,65 @@ afterEach(() => {
 });
 ```
 
-## Selectores en tests — siempre `data-testid`
+## Test selectors — always `data-testid`
 
-**Regla absoluta:** usar únicamente `getByTestId` para encontrar elementos en los tests. Nunca usar `getByRole`, `getByLabelText`, `getByText`, `getByPlaceholderText` ni similares.
+**Absolute rule:** only use `getByTestId` to find elements in tests. Never use `getByRole`, `getByLabelText`, `getByText`, `getByPlaceholderText` or similar.
 
-**Por qué:** los selectores basados en roles, labels o texto se rompen con cualquier cambio de copy, restructuración de HTML o actualización de librería de UI. `data-testid` es un contrato explícito entre el componente y su test, independiente de la presentación.
+**Why:** role-, label- or text-based selectors break with any copy change, HTML restructuring or UI library update. `data-testid` is an explicit contract between the component and its test, independent of presentation.
 
-### Convención de nombres
+### Naming convention
 
 ```
-{página|componente}-{elemento}           → login-username, register-submit
-{página|componente}-{elemento}-error     → register-email-error (helper text de validación)
+{page|component}-{element}           → login-username, register-submit
+{page|component}-{element}-error     → register-email-error (validation helper text)
 ```
 
-### Cómo agregar testids en componentes
+### How to add test ids to components
 
-**FormTextField** — acepta `testId?: string`:
-- El `testId` se pone en el `<input>` nativo vía `slotProps.htmlInput`
-- `${testId}-error` se pone en el helper text vía `slotProps.formHelperText`
+**FormTextField** — accepts `testId?: string`:
+- `testId` goes on the native `<input>` via `slotProps.htmlInput`
+- `${testId}-error` goes on the helper text via `slotProps.formHelperText`
 
-**FormSelectField** — acepta `testId?: string`:
-- El `testId` se pone en el `<FormControl>` wrapper vía `data-testid`
+**FormSelectField** — accepts `testId?: string`:
+- `testId` goes on the `<FormControl>` wrapper via `data-testid`
 
-**PrimaryFormButton** — acepta `testId?: string`:
-- El `testId` se pone en el `<Button>` vía `data-testid`
+**PrimaryFormButton** — accepts `testId?: string`:
+- `testId` goes on the `<Button>` via `data-testid`
 
-**Elementos directos en JSX** (headings, links, contenedores de error):
+**Elements directly in JSX** (headings, links, error containers):
 ```tsx
 <Typography data-testid="login-heading">Welcome back</Typography>
 <Box data-testid="login-error">{errors}</Box>
 <Link data-testid="login-register-link">Register</Link>
 ```
 
-### Patrón en tests
+### Pattern in tests
 
 ```ts
-// Verificar presencia
+// Check presence
 expect(screen.getByTestId("login-username")).toBeInTheDocument();
 
-// Interactuar
+// Interact
 await user.type(screen.getByTestId("login-username"), "testuser");
 await user.click(screen.getByTestId("login-submit"));
 
-// Verificar errores de validación
+// Check validation errors
 expect(screen.getByTestId("register-email-error")).toHaveTextContent(/please enter a valid email/i);
 
-// Verificar errores de API (wrapper de alertas)
+// Check API errors (alert wrapper)
 await waitFor(() => expect(screen.getByTestId("login-error")).toBeInTheDocument());
 expect(screen.getByTestId("login-error")).toHaveTextContent("detail: ...");
 ```
 
-## Comandos
+## Commands
 
 ```bash
-# Watch mode (desarrollo)
+# Watch mode (development)
 docker compose exec frontend npm run test
 
 # Single run (CI)
 docker compose exec frontend npm run test:run
 
-# Coverage HTML en coverage/index.html
+# HTML coverage in coverage/index.html
 docker compose exec frontend npm run coverage
 ```
