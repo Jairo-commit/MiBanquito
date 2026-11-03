@@ -14,7 +14,6 @@ paths:
           return SavingsAccount.objects.all()
       return SavingsAccount.objects.filter(user=self.request.user)
   ```
-  - `products/views.py` still exposes every user's loans and CDTs; fix it when you touch it.
 - **The owner comes from the request, never from the payload.** Set it in `perform_create` with `serializer.save(user=self.request.user)` and mark `user` as `read_only` in the serializer.
 - **Check ownership of every account referenced in the payload** before acting on it, and raise `PermissionDenied` when it belongs to someone else (see `TransactionViewSet.perform_create`).
 - **Declare `permission_classes` on every view**, even though `IsAuthenticated` is the default. Only public endpoints (register, token) use `AllowAny`.

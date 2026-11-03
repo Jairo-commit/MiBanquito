@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from accounts.models import SavingsAccount
-from accounts.helpers import MIN_OPENING_BALANCE
+from accounts.helpers import validate_opening_balance
 
 
 class SavingsAccountSerializer(serializers.ModelSerializer):
@@ -16,10 +17,10 @@ class SavingsAccountSerializer(serializers.ModelSerializer):
         }
 
     def validate_balance(self, value):
-        if value < MIN_OPENING_BALANCE:
-            raise serializers.ValidationError(
-                f"The minimum balance to open an account is ${MIN_OPENING_BALANCE:,.0f}."
-            )
+        try:
+            validate_opening_balance(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages)
         return value
 
     def create(self, validated_data):
