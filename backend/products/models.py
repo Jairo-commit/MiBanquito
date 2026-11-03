@@ -5,15 +5,11 @@ from django.db import models
 
 
 class LoanRequest(models.Model):
-    STATUS_PENDING = "PENDING"
-    STATUS_APPROVED = "APPROVED"
-    STATUS_REJECTED = "REJECTED"
 
-    STATUS_CHOICES = [
-        (STATUS_PENDING, "Pending"),
-        (STATUS_APPROVED, "Approved"),
-        (STATUS_REJECTED, "Rejected"),
-    ]
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
@@ -25,7 +21,7 @@ class LoanRequest(models.Model):
     term_months = models.PositiveIntegerField()
     monthly_rate = models.DecimalField(max_digits=5, decimal_places=4)
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING
+        max_length=10, choices=Status.choices, default=Status.PENDING
     )
     created_at = models.DateTimeField(auto_now_add=True)
     reviewed_by = models.ForeignKey(
@@ -39,13 +35,10 @@ class LoanRequest(models.Model):
 
 
 class CDT(models.Model):
-    STATUS_ACTIVE = "ACTIVE"
-    STATUS_MATURED = "MATURED"
 
-    STATUS_CHOICES = [
-        (STATUS_ACTIVE, "Active"),
-        (STATUS_MATURED, "Matured"),
-    ]
+    class Status(models.TextChoices):
+        ACTIVE = "ACTIVE", "Active"
+        MATURED = "MATURED", "Matured"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
@@ -58,6 +51,6 @@ class CDT(models.Model):
     annual_rate = models.DecimalField(max_digits=5, decimal_places=4)
     maturity_date = models.DateField()
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default=STATUS_ACTIVE
+        max_length=10, choices=Status.choices, default=Status.ACTIVE
     )
     created_at = models.DateTimeField(auto_now_add=True)

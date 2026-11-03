@@ -9,7 +9,7 @@ import {
 import { Box } from "@mui/material";
 
 export function ProtectedRoute({ children } : { children: React.ReactElement }) {
-  const [isAuthorized, setIsAuthorized] = useState<Boolean | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
     auth().catch(() => setIsAuthorized(false));
@@ -27,8 +27,7 @@ export function ProtectedRoute({ children } : { children: React.ReactElement }) 
       } else {
         setIsAuthorized(false);
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       setIsAuthorized(false);
     }
   };

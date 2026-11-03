@@ -16,6 +16,13 @@ class LoanRequestSerializer(serializers.ModelSerializer):
             "reviewed_by",
             "reviewed_at",
         ]
+        extra_kwargs = {
+            "user": {"read_only": True},
+            "status": {"read_only": True},
+            "created_at": {"read_only": True},
+            "reviewed_by": {"read_only": True},
+            "reviewed_at": {"read_only": True},
+        }
 
 
 class CDTSerializer(serializers.ModelSerializer):
@@ -31,3 +38,8 @@ class CDTSerializer(serializers.ModelSerializer):
             "status",
             "created_at",
         ]
+        extra_kwargs = {
+            "user": {"read_only": True},
+            "status": {"read_only": True},
+            "created_at": {"read_only": True},
+        }

@@ -1,6 +1,8 @@
 # products app
 
-`LoanRequest` and `CDT` models, exposed as ModelViewSets. The app has no tests yet; when adding `products/tests.py`, follow `.claude/rules/backend/testing.md` and use `transactions/tests.py` as the reference.
+`LoanRequest` and `CDT` models, exposed as ModelViewSets. Each user only reaches their own records (superusers reach all), and `user`, `status` and review fields are set by the server, never by the payload.
+
+Tests live in `products/tests.py`. General conventions are in `.claude/rules/backend/testing.md`; records are built with the local `create_loan(user, **overrides)` and `create_cdt(user, **overrides)` helpers.
 
 ## Endpoints
 
@@ -10,8 +12,3 @@
 | `/api/products/loans/{id}/` | `loans` | GET, PUT, PATCH, DELETE | Yes |
 | `/api/products/cdts/` | `cdts` | GET, POST | Yes |
 | `/api/products/cdts/{id}/` | `cdts` | GET, PUT, PATCH, DELETE | Yes |
-
-## Known gaps
-
-- `LoanRequestViewSet` and `CDTViewSet` use `queryset = Model.objects.all()`, so any authenticated user can reach every user's records. Scope them in `get_queryset()` (see `.claude/rules/backend/views-and-permissions.md`).
-- The serializers accept `user` and `status` from the payload; both should be read-only and `user` set from `request.user`.
